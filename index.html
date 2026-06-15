@@ -37,7 +37,30 @@
   .toggle button:first-child { border-left: none; }
   .toggle button.active { background: var(--accent); color: #fff; }
   .toggle .band-grades { font-size: 11px; opacity: .8; display: block; font-weight: 400; }
-  #map { flex: 1; width: 100%; }
+  .demo-ctrl { display: flex; align-items: center; gap: 6px; margin-left: 14px; font-size: 12px; color: var(--muted); }
+  .demo-ctrl select { font: inherit; font-size: 13px; padding: 5px 8px; border: 1px solid #d8d2c5; border-radius: 8px; background: #fffdf9; color: var(--ink); cursor: pointer; }
+  #main { flex: 1; display: flex; min-height: 0; }
+  #sidebar { width: 340px; flex: none; overflow-y: auto; background: #efece5; border-right: 1px solid #e2ddd2; padding-bottom: 44px; }
+  #map { flex: 1; min-width: 0; }
+
+  .side-head { padding: 10px 14px; font-size: 12px; color: var(--muted); font-weight: 600;
+    position: sticky; top: 0; background: #efece5; border-bottom: 1px solid #e2ddd2; z-index: 1; }
+  .lcard { margin: 10px; background: #fff; border: 1px solid #e2ddd2; border-radius: 10px;
+    overflow: hidden; cursor: pointer; transition: box-shadow .12s, transform .12s, border-color .12s; }
+  .lcard.hl { box-shadow: 0 5px 16px rgba(0,0,0,.18); transform: translateY(-1px); border-color: var(--accent); }
+  .lcard img { width: 100%; height: 120px; object-fit: cover; display: block; background: #e8e3da; }
+  .lcard-body { padding: 8px 10px 10px; }
+  .lcard-price { font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: 18px; line-height: 1.1; }
+  .lcard-price span { font-size: 12px; color: var(--muted); font-weight: 400; }
+  .lcard-stats { font-size: 12px; color: #444; margin-top: 3px; }
+  .lcard-addr { font-size: 12.5px; color: var(--ink); margin-top: 3px; font-weight: 500; }
+  .lcard-dist { font-size: 11.5px; color: var(--muted); margin-top: 3px; }
+  .lcard-link { display: inline-block; margin-top: 6px; font-size: 12px; color: var(--accent); font-weight: 600; text-decoration: none; }
+  .lcard-link:hover { text-decoration: underline; }
+
+  .lst-pill { color: #fff; font: 600 11px/1 Inter, sans-serif; padding: 3px 6px; border-radius: 6px;
+    border: 1.5px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,.5); white-space: nowrap; transition: transform .1s; }
+  .lst-pill--hl { transform: scale(1.6); box-shadow: 0 0 0 2px #1C1E26, 0 3px 9px rgba(0,0,0,.6); }
 
   .legend {
     background: #fffdf9; border: 1px solid #e2ddd2; border-radius: 8px;
@@ -69,75 +92,35 @@
 <header>
   <div class="title">
     <h1>Moving to PA</h1>
-    <span class="sub">School districts near Lansdale, color-coded by quality <b>within Pennsylvania</b> (10 = best in PA). Pick a grade band; click a district for details.</span>
+    <span class="sub">School districts near Lansdale, color-coded by quality <b>within Pennsylvania</b> (10 = best in PA). Toggle one or more grade bands — the fill shows their average. Click a district for details.</span>
   </div>
   <div class="toggle" id="toggle">
     <button data-band="elementary" class="active">Elementary<span class="band-grades">K–5</span></button>
-    <button data-band="middle">Middle<span class="band-grades">6–8</span></button>
+    <button data-band="middle" class="active">Middle<span class="band-grades">6–8</span></button>
     <button data-band="high">High School<span class="band-grades">9–12</span></button>
   </div>
+  <div class="demo-ctrl">
+    <label for="demoSelect">Demographics</label>
+    <select id="demoSelect">
+      <option value="">None</option>
+      <option value="white">% White</option>
+      <option value="black">% Black</option>
+      <option value="asian">% Asian</option>
+      <option value="hispanic">% Hispanic</option>
+    </select>
+  </div>
 </header>
-<div id="map"></div>
+<div id="main">
+  <aside id="sidebar"></aside>
+  <div id="map"></div>
+</div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 // ── EDIT HERE ─────────────────────────────────────────────────────────────
-// Per-band PA-RELATIVE scores keyed by Census district GEOID.
-// 10 = best in Pennsylvania, 1 = worst. Anchored on PA state rank (SchoolDigger
-// percentile + Niche / U.S. News PA rank), mapped via fixed PA-percentile bands.
-// Scores are district-representative (multi-school averages) per band. 2025-26.
-const DISTRICTS = {
-  "4202400": { name:"Wissahickon", drive:"~18 min", config:"K–5 elem, 6–8 middle, 9–12 HS",
-    districtRank:"Niche #13 of 494 PA districts", trend:"HS ranking slipping slightly in recent years.",
-    elementary:{score:8, rank:"~top 10% of PA (Stony Creek top ~2%)", note:"Four K–5 schools, all strong; borderline 8/9."},
-    middle:{score:9, rank:"#46 of 873 PA middle schools (top 5%)", note:"Single Wissahickon Middle — clean top-5% figure."},
-    high:{score:9, rank:"#51 of 681 PA HS · U.S. News #21 PA", note:"Highest-ranked HS of the set."} },
-  "4219470": { name:"Colonial", drive:"~25 min", config:"K–3 + 4–5 elem, 6–8 middle, 9–12 HS",
-    districtRank:"Niche #10 of 496 PA districts",
-    elementary:{score:8, rank:"Colonial Elem #107 of 1,526 PA (top 7%)", note:"One large elementary, so this rank is genuinely representative."},
-    middle:{score:8, rank:"Colonial Middle ~top 6% of PA", note:"Firmly in the top-10% band."},
-    high:{score:9, rank:"Plymouth-Whitemarsh #28 of 686 PA (top 4%)", note:"Strongest band."} },
-  "4205310": { name:"Central Bucks", drive:"~25 min", config:"K–6 elem, 7–9 middle, 10–12 HS",
-    districtRank:"Niche #32 of 494 PA districts",
-    elementary:{score:7, rank:"~top 12–18% of PA (15-school avg; Cold Spring top ~2%)", note:"Huge district — average sits well below its best school. Estimated."},
-    middle:{score:7, rank:"~top 10–15% of PA (5-school avg; Holicong top ~3%)", note:"Conservative district average; could be an 8."},
-    high:{score:8, rank:"CB East #35 of 686 PA (top 5%); West/South lower", note:"3-school average ~top 10%."} },
-  "4224390": { name:"Upper Dublin", drive:"~22 min", config:"K–5 elem, 6–8 middle, 9–12 HS",
-    districtRank:"Niche #15 of 494 PA districts", trend:"HS slipping: #27 PA (2024) → #39 (2025).",
-    elementary:{score:9, rank:"~top 5–7% of PA (Fort Washington #5, Maple Glen top ~3%)", note:"Elite and consistent; borderline 8/9."},
-    middle:{score:8, rank:"Sandy Run #47 of 873 PA (top 5%)", note:"Just outside the top-5% cut for a 9."},
-    high:{score:7, rank:"Upper Dublin HS #73 of 674 PA (top 11%)", note:"Top-20% band — the PA scale is harsher here than national."} },
-  "4222560": { name:"Spring-Ford Area", drive:"~28 min", config:"K–4 elem, 5–7 & 8–9 grade centers, 10–12 HS",
-    districtRank:"Niche 2026 #10 reported but UNCONFIRMED (historically ~#24 PA)",
-    elementary:{score:7, rank:"~top 12–18% of PA (Upper Providence top ~3%, others mid)", note:"Wide spread; estimated district average."},
-    middle:{score:9, rank:"8th-Grade Center #36 of 893 PA (top 4%)", note:"Grade-center model — only the tested 8th center ranks; uncertain."},
-    high:{score:8, rank:"Spring-Ford SHS #52 of 681 PA (top 8%)", note:"Longest regular drive of the set."} },
-  "4217280": { name:"North Penn", drive:"0 min (work)", config:"K–6 elem (6th still elementary), 7–9 middle, 10–12 HS",
-    districtRank:"Niche #60 of 494 PA districts",
-    elementary:{score:6, rank:"~top 23% of PA (13-school avg, range #174–#608)", note:"Wide spread pulls the average down. 6th grade is still elementary here."},
-    middle:{score:6, rank:"~top 24% of PA (Pennbrook strong, Penndale weak)", note:"Penndale (~#359/873) drags the 7–9 average."},
-    high:{score:7, rank:"North Penn HS #124 of 681 PA · U.S. News #87 PA", note:"Top-20% band. Shortest commute, most rentals."} },
-  "4214250": { name:"Methacton", drive:"~22 min", config:"K–4 elem + 5–6 Skyview, 7–8 Arcola middle, 9–12 HS",
-    districtRank:"Niche #57 of 494 PA districts",
-    elementary:{score:7, rank:"~top 15% of PA (Worcester top ~4%, Eagleville weak)", note:"Uneven across schools; estimated."},
-    middle:{score:7, rank:"Arcola Intermediate #125 of 873 PA (top 14%)", note:"Single 7–8 school."},
-    high:{score:7, rank:"Methacton HS #174/686 (SchoolDigger) vs #76 PA (U.S. News)", note:"Wide source spread → moderate uncertainty."} },
-  "4221870": { name:"Souderton Area", drive:"~14 min", config:"K–5 elem, 6–8 middle, 9–12 HS",
-    districtRank:"Niche #49 of 494 PA districts",
-    elementary:{score:6, rank:"~top 23% of PA (6-school avg; mostly estimated)", note:"Least-certain band — one exact rank plus star-rating estimates."},
-    middle:{score:6, rank:"~top 23% of PA (Indian Valley #103 vs Indian Crest #304)", note:"The two middles differ sharply."},
-    high:{score:7, rank:"Souderton HS #72 of 681 PA (top 11%)", note:"Both sources agree; borderline 8. More affordable, close-in north."} },
-  "4211610": { name:"Hatboro-Horsham", drive:"~22 min", config:"K–5 elem, 6–8 middle, 9–12 HS",
-    districtRank:"Niche #117 of 494 PA districts",
-    elementary:{score:6, rank:"~top 32% of PA (Simmons #393, Blair Mill #571)", note:"Near the 6/5 boundary; estimated."},
-    middle:{score:7, rank:"Keith Valley #143 of 873 PA (top 16%)", note:"The district's strongest band — middle outscores the high school."},
-    high:{score:6, rank:"Hatboro-Horsham HS #268/686 PA · U.S. News #200 PA", note:"Weakest HS of the set; ~top 34%."} },
-  "4218990": { name:"Philadelphia (neighborhood)", drive:"~45 min", config:"varies by catchment (magnets excluded)",
-    districtRank:"SchoolDigger #473 of 606 PA districts (magnets included)", trend:"Citywide magnets (Masterman, Central) would score ~9–10 but are lottery/test-in.",
-    elementary:{score:2, rank:"neighborhood avg ~bottom 25–35% of PA", note:"Bimodal; a few catchments (Penn Alexander, Meredith) reach mid-pack."},
-    middle:{score:1, rank:"neighborhood avg below top-80% of PA", note:"Weakest band; magnets excluded."},
-    high:{score:1, rank:"neighborhood avg bottom ~10–20% (e.g. South Philadelphia #656/681)", note:"Magnets excluded."} }
-};
+// District scores load from districts_scores.json (computed from PA state
+// proficiency for every district in the region). Edit that file to change scores.
+let DISTRICTS = {};
 
 // Point markers (single locations, not areas). Coordinates approximate.
 const POINTS = [
@@ -149,7 +132,14 @@ const POINTS = [
 // ──────────────────────────────────────────────────────────────────────────
 
 const BAND_LABEL = { elementary:"Elementary", middle:"Middle", high:"High School" };
-let currentBand = "elementary";
+const BAND_KEYS = ["elementary", "middle", "high"];
+const sel = new Set(["elementary", "middle"]);   // multi-select; default covers the kids' bands
+const fmt = n => Number.isInteger(n) ? String(n) : n.toFixed(1);
+function selScore(geoid) {
+  const d = DISTRICTS[geoid];
+  const v = BAND_KEYS.filter(b => sel.has(b)).map(b => d[b] && d[b].score).filter(x => x != null);
+  return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null;
+}
 
 function colorFor(score) {
   if (score >= 8.5) return "#15803d"; // deep green
@@ -160,16 +150,22 @@ function colorFor(score) {
   return "#b91c1c";                   // red
 }
 
-function popupHtml(geoid, band) {
+function popupHtml(geoid) {
   const d = DISTRICTS[geoid];
-  const b = d[band];
-  const c = colorFor(b.score);
-  return `<h3>${d.name}</h3>
-    <span class="pop-score" style="background:${c}">${b.score} / 10</span><span class="pop-band">${BAND_LABEL[band]} · PA scale</span>
-    <div class="pop-meta">${d.districtRank}</div>
-    <div class="pop-rank"><b>${BAND_LABEL[band]} rank:</b> ${b.rank}</div>
-    <div>${b.note}</div>
-    <div class="pop-config">Drive to Lansdale: ${d.drive} · ${d.config}</div>
+  const s = selScore(geoid);
+  const bands = BAND_KEYS.filter(b => sel.has(b));
+  const head = s == null
+    ? `<span class="pop-score" style="background:#94a3b8">—</span><span class="pop-band">select a grade band ↑</span>`
+    : `<span class="pop-score" style="background:${colorFor(s)}">${fmt(s)} / 10</span><span class="pop-band">${bands.map(b => BAND_LABEL[b]).join(" + ")} · PA</span>`;
+  const lines = bands.map(b => {
+    const o = d[b];
+    if (!o || o.score == null) return `<div class="pop-rank"><b>${BAND_LABEL[b]}:</b> n/a</div>`;
+    return `<div class="pop-rank"><b>${BAND_LABEL[b]} ${o.score}/10</b>${o.rank ? ` — ${o.rank}` : ""}</div>`;
+  }).join("");
+  return `<h3>${d.name}</h3>${head}
+    ${d.districtRank ? `<div class="pop-meta">${d.districtRank}</div>` : ""}
+    ${lines}
+    <div class="pop-config">${d.drive ? `Drive to Lansdale: ${d.drive} · ` : ""}${d.config || ""}</div>
     ${d.trend ? `<div class="pop-trend">${d.trend}</div>` : ""}`;
 }
 
@@ -182,47 +178,91 @@ L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
 
 const entries = []; // { geoid, layer, label }
 
-fetch("districts.geojson").then(r => r.json()).then(geo => {
+Promise.all([
+  fetch("districts_scores.json").then(r => r.json()),
+  fetch("districts.geojson").then(r => r.json())
+]).then(([scores, geo]) => {
+  DISTRICTS = scores;
+  scoresReady = true;
+  if (typeof maybeBuildSidebar === "function") maybeBuildSidebar();
+  buildPerDistrict();
   const layer = L.geoJSON(geo, {
     style: f => styleFor(f.properties.GEOID),
     onEachFeature: (f, lyr) => {
       const geoid = f.properties.GEOID;
       if (!DISTRICTS[geoid]) return;
-      lyr.bindPopup(popupHtml(geoid, currentBand), { maxWidth:280 });
-      lyr.on("mouseover", () => lyr.setStyle({ weight:3, fillOpacity:0.65 }));
-      lyr.on("mouseout",  () => lyr.setStyle({ weight:1.5, fillOpacity:0.5 }));
+      lyr.bindPopup(popupHtml(geoid), { maxWidth:280 });
+      lyr.on("mouseover", () => lyr.setStyle({ weight:3, fillOpacity:0.7 }));
+      lyr.on("mouseout",  () => lyr.setStyle(styleFor(geoid)));
       const center = lyr.getBounds().getCenter();
-      const label = L.marker(center, {
-        interactive:false,
-        icon: L.divIcon({ className:"score-label", html:String(DISTRICTS[geoid][currentBand].score), iconSize:[34,18] })
-      }).addTo(map);
+      const label = L.marker(center, { interactive:false, icon: labelFor(geoid) }).addTo(map);
       entries.push({ geoid, layer:lyr, label });
     }
   }).addTo(map);
   map.fitBounds(layer.getBounds(), { padding:[30,30] });
 });
 
+// District gating: a district stays colored only if it contains at least one school
+// whose score band is currently toggled on. Else it greys out.
+let perDistrictSchools = {}, perDistrictReady = false, schoolListRaw = null;
+const activeBands = new Set([6, 7, 8, 9, 10]);
+function buildPerDistrict() {
+  if (!scoresReady || !schoolListRaw) return;
+  const nameToGeoid = {};
+  for (const g in DISTRICTS) nameToGeoid[DISTRICTS[g].name] = g;
+  perDistrictSchools = {};
+  schoolListRaw.forEach(s => {
+    if (s.score == null || s.score < 6) return;
+    const g = nameToGeoid[s.district];
+    if (g) (perDistrictSchools[g] = perDistrictSchools[g] || []).push({ level: s.level, score: s.score });
+  });
+  perDistrictReady = true;
+  if (entries.length) applyBands();
+}
+// Mirror the school-dot visibility test: a district is colored only if it holds a
+// school that is currently visible (active score band AND active grade level).
+function schoolVisible(level, score) {
+  if (!activeBands.has(score)) return false;
+  const gated = level === "elementary" || level === "middle" || level === "high";
+  return gated ? sel.has(level) : sel.size > 0;
+}
+function districtHasActiveSchool(geoid) {
+  if (!perDistrictReady) return true;          // before schools load, show all
+  const arr = perDistrictSchools[geoid];
+  return arr ? arr.some(s => schoolVisible(s.level, s.score)) : false;
+}
+
+function labelFor(geoid) {
+  const s = selScore(geoid);
+  const show = s != null && districtHasActiveSchool(geoid);
+  return L.divIcon({ className:"score-label", html: show ? fmt(s) : "", iconSize:[34,18] });
+}
+
 function styleFor(geoid) {
-  const d = DISTRICTS[geoid];
-  const c = d ? colorFor(d[currentBand].score) : "#888";
+  const s = DISTRICTS[geoid] ? selScore(geoid) : null;
+  if (s == null || !districtHasActiveSchool(geoid))
+    return { color:"#d8d3c9", weight:0.5, opacity:0.6, fillColor:"#e7e3da", fillOpacity:0.12 };
+  const c = colorFor(s);
   return { color:c, weight:1.5, opacity:0.9, fillColor:c, fillOpacity:0.5 };
 }
 
-function applyBand(band) {
-  currentBand = band;
+function applyBands() {
   entries.forEach(({ geoid, layer, label }) => {
     layer.setStyle(styleFor(geoid));
-    layer.setPopupContent(popupHtml(geoid, band));
-    label.setIcon(L.divIcon({ className:"score-label", html:String(DISTRICTS[geoid][band].score), iconSize:[34,18] }));
+    layer.setPopupContent(popupHtml(geoid));
+    label.setIcon(labelFor(geoid));
   });
 }
 
-// Toggle wiring
+// Multi-select toggle wiring — click to add/remove a grade band (1–3 at a time)
 document.getElementById("toggle").addEventListener("click", e => {
   const btn = e.target.closest("button");
   if (!btn) return;
-  document.querySelectorAll("#toggle button").forEach(b => b.classList.toggle("active", b === btn));
-  applyBand(btn.dataset.band);
+  const b = btn.dataset.band;
+  if (sel.has(b)) sel.delete(b); else sel.add(b);
+  btn.classList.toggle("active", sel.has(b));
+  applyBands();
+  if (typeof applySchoolLevelFilter === "function") applySchoolLevelFilter();
 });
 
 // Point markers — work pins always on; basketball in a toggleable layer
@@ -241,30 +281,180 @@ POINTS.forEach(p => {
 });
 basketballLayer.addTo(map); // on by default, toggleable
 
-// Individual school locations (toggleable, off by default) — NCES 2023-24 geocodes
-const SCHOOL_COLOR = { elementary:"#2563eb", middle:"#7c3aed", high:"#0f766e", other:"#6b7280" };
+// Individual school locations (all 10 districts incl. Philadelphia), colored by a
+// PA-relative 1–10 score computed from state proficiency (2018 EDFacts: reading +
+// math % proficient, ranked across ~2,800 PA schools). Grouped into score bands
+// you can toggle independently.
+const BAND_COLOR = { 10:"#15803d", 9:"#16a34a", 8:"#65a30d", 7:"#ca8a04", 6:"#d97706" };
+const BANDS = [10, 9, 8, 7, 6];   // only show schools scoring 6–10; one toggle each
 const SCHOOL_LABEL = { elementary:"Elementary", middle:"Middle / Intermediate", high:"High", other:"School" };
-const schoolsLayer = L.layerGroup();
-fetch("schools.json").then(r => r.json()).then(list => {
-  list.forEach(s => {
-    const c = SCHOOL_COLOR[s.level] || "#6b7280";
-    const icon = L.divIcon({ className:"",
-      html:`<div style="width:10px;height:10px;border-radius:50%;background:${c};border:1.5px solid #fff;box-shadow:0 1px 2px rgba(0,0,0,.5)"></div>`,
-      iconSize:[10,10], iconAnchor:[5,5] });
-    const q = encodeURIComponent(`${s.name} ${s.city} PA`);
-    L.marker([s.lat, s.lng], { icon }).bindPopup(
-      `<h3 style="margin-bottom:2px">${s.name}</h3>
-       <div class="pop-band">${SCHOOL_LABEL[s.level]} · ${s.district}</div>
-       <div class="pop-meta">${s.city}, PA</div>
-       <div class="pop-rank"><a href="https://www.greatschools.org/search/search.page?q=${q}" target="_blank" rel="noopener">Learn more on GreatSchools ↗</a></div>`,
-      { maxWidth:240 }
-    ).addTo(schoolsLayer);
-  });
+const bandLayers = {};
+BANDS.forEach(b => bandLayers[b] = L.layerGroup());
+// School attendance boundaries (NCES SABS 2015–16). Hover a school pin to isolate
+// it: its catchment is drawn and every district fades away. ~90% of shown schools
+// have a boundary; the 2015–16 survey omits a few districts and may be dated.
+const boundaryByNcessch = {};
+fetch("school_boundaries.geojson").then(r => r.json()).then(g => {
+  g.features.forEach(f => { boundaryByNcessch[f.properties.ncessch] = f; });
 });
+let hlBoundary = null;
+function clearSchoolBoundary() { if (hlBoundary) { map.removeLayer(hlBoundary); hlBoundary = null; } }
+function showSchoolBoundary(ncessch, color) {
+  const feat = boundaryByNcessch[ncessch];
+  if (!feat) return false;
+  clearSchoolBoundary();
+  hlBoundary = L.geoJSON(feat, { interactive:false,
+    style:{ color:"#1f2421", weight:2.5, fillColor:color, fillOpacity:0.55 } }).addTo(map);
+  return true;
+}
+function dimDistricts(on) {
+  entries.forEach(({ geoid, layer, label }) => {
+    if (on) { layer.setStyle({ fillOpacity:0.04, color:"#d4cfc5", weight:0.5 }); label.setOpacity(0); }
+    else { layer.setStyle(styleFor(geoid)); label.setOpacity(1); }
+  });
+}
 
-// Overlay toggle control (Schools off by default, Basketball on)
-L.control.layers(null, { "School locations": schoolsLayer, "Basketball": basketballLayer },
-  { collapsed:false, position:"topleft" }).addTo(map);
+const schoolMarkers = []; // { m, level, score } — for grade-band show/hide
+function applySchoolLevelFilter() {
+  schoolMarkers.forEach(({ m, level, score }) => {
+    const gated = level === "elementary" || level === "middle" || level === "high";
+    const want = gated ? sel.has(level) : sel.size > 0;   // grade-center/intermediate: show if any band on
+    const grp = bandLayers[score];
+    if (want && !grp.hasLayer(m)) grp.addLayer(m);
+    else if (!want && grp.hasLayer(m)) grp.removeLayer(m);
+  });
+}
+
+fetch("schools.json").then(r => r.json()).then(list => {
+  schoolListRaw = list;
+  buildPerDistrict();
+  list.forEach(s => {
+    if (s.score == null || s.score < 6) return;   // 1–5 and unrated excluded
+    const c = BAND_COLOR[s.score];
+    const icon = L.divIcon({ className:"",
+      html:`<div style="width:11px;height:11px;border-radius:50%;background:${c};border:1.5px solid #fff;box-shadow:0 1px 2px rgba(0,0,0,.5)"></div>`,
+      iconSize:[11,11], iconAnchor:[5.5,5.5] });
+    const q = encodeURIComponent(`${s.name} ${s.city} PA school ratings`);
+    const m = L.marker([s.lat, s.lng], { icon }).bindPopup(
+      `<h3 style="margin-bottom:2px">${s.name}</h3>
+       <span class="pop-score" style="background:${c}">${s.score} / 10</span><span class="pop-band">${SCHOOL_LABEL[s.level]} · ${s.district}</span>
+       <div class="pop-rank">PA score ${s.score}/10 — state reading + math proficiency</div>
+       <div class="pop-meta">${s.city}, PA${boundaryByNcessch[s.id] ? "" : " · no attendance-zone data"}</div>
+       <div class="pop-rank"><a href="https://www.google.com/search?q=${q}" target="_blank" rel="noopener">Look up school info ↗</a></div>`,
+      { maxWidth:250 }
+    );
+    m.on("mouseover", () => { if (showSchoolBoundary(s.id, c)) dimDistricts(true); });
+    m.on("mouseout",  () => { clearSchoolBoundary(); dimDistricts(false); });
+    m.addTo(bandLayers[s.score]);
+    schoolMarkers.push({ m, level: s.level, score: s.score });
+  });
+  applySchoolLevelFilter();   // honor the default grade-band selection
+});
+// All shown bands ON by default; basketball on too.
+BANDS.forEach(b => bandLayers[b].addTo(map));
+
+// Apartment listings (from the realtor's email) — geocoded, colored by budget,
+// labeled which district they fall in. Loaded from listings.json.
+const BUDGET_COLOR = { under:"#15803d", ceiling:"#d97706", over:"#b91c1c" };
+// Link to the listing: the realtor's RealScout deep-link if present (s.url),
+// else a reliable address search that lands on the public listing.
+function listingUrl(s) {
+  return s.url || ("https://www.google.com/search?q=" + encodeURIComponent(`${s.address}, ${s.city}, PA for rent`));
+}
+const listingsLayer = L.layerGroup();
+function listingPopup(s) {
+  const d = DISTRICTS[s.geoid];
+  const sc = b => d && d[b] && d[b].score != null ? d[b].score : "–";
+  const distLine = d
+    ? `In <b>${s.district}</b> SD — Elem ${sc("elementary")} · Middle ${sc("middle")} · High ${sc("high")}`
+    : `In ${s.district || "—"}`;
+  const bathWarn = s.bathOK ? "" : `<div class="pop-trend">⚠ only ${Math.floor(s.baths)} full bath (you want 2)</div>`;
+  const col = BUDGET_COLOR[s.budget] || "#334155";
+  const img = s.photo ? `<img src="${s.photo}" alt="${s.address}" loading="lazy" style="width:100%;height:150px;object-fit:cover;border-radius:8px;display:block;margin-bottom:8px">` : "";
+  return `${img}<h3 style="margin-bottom:2px">${s.address}</h3>
+    <span class="pop-score" style="background:${col}">${s.price}/mo</span><span class="pop-band">${s.beds} bd · ${s.baths} ba · ${s.sqft.toLocaleString()} sqft</span>
+    <div class="pop-meta">${s.city}, PA</div>
+    <div class="pop-rank">${distLine}</div>${bathWarn}
+    <div class="pop-rank"><a href="${listingUrl(s)}" target="_blank" rel="noopener">View details ↗</a></div>`;
+}
+let listingItems = null, scoresReady = false;
+function maybeBuildSidebar() { if (scoresReady && listingItems) buildSidebar(listingItems); }
+
+function highlightMarker(marker, on) {
+  const pill = marker._icon && marker._icon.querySelector(".lst-pill");
+  if (pill) pill.classList.toggle("lst-pill--hl", on);
+  marker.setZIndexOffset(on ? 5000 : 2000);
+}
+
+function buildSidebar(items) {
+  const wrap = document.getElementById("sidebar");
+  wrap.innerHTML = `<div class="side-head">${items.length} listings · hover a card to locate it</div>`;
+  items.forEach(({ s, marker }) => {
+    const col = BUDGET_COLOR[s.budget] || "#334155";
+    const d = DISTRICTS[s.geoid];
+    const sc = b => d && d[b] && d[b].score != null ? d[b].score : "–";
+    const card = document.createElement("div");
+    card.className = "lcard";
+    card.innerHTML =
+      `${s.photo ? `<img src="${s.photo}" loading="lazy" alt="">` : ""}
+       <div class="lcard-body">
+         <div class="lcard-price" style="color:${col}">${s.price}<span>/mo</span></div>
+         <div class="lcard-stats">${s.beds} bd · ${s.baths} ba · ${s.sqft.toLocaleString()} sqft</div>
+         <div class="lcard-addr">${s.address}, ${s.city}</div>
+         <div class="lcard-dist">${s.district || "—"} · E${sc("elementary")} M${sc("middle")} H${sc("high")}${s.bathOK ? "" : " · ⚠ 1 full bath"}</div>
+         <a class="lcard-link" href="${listingUrl(s)}" target="_blank" rel="noopener">View details ↗</a>
+       </div>`;
+    card.addEventListener("mouseenter", () => { highlightMarker(marker, true); card.classList.add("hl"); });
+    card.addEventListener("mouseleave", () => { highlightMarker(marker, false); card.classList.remove("hl"); });
+    card.addEventListener("click", () => { map.panTo(marker.getLatLng()); marker.openPopup(); });
+    card.querySelector(".lcard-link").addEventListener("click", ev => ev.stopPropagation());
+    wrap.appendChild(card);
+  });
+}
+
+fetch("listings.json").then(r => r.json()).then(list => {
+  list.sort((a, b) => a.priceNum - b.priceNum);
+  const items = [];
+  list.forEach(s => {
+    if (s.lat == null) return;
+    const col = BUDGET_COLOR[s.budget] || "#334155";
+    const priceK = "$" + (Math.round(s.priceNum / 100) / 10).toFixed(1) + "k";
+    const icon = L.divIcon({ className:"",
+      html:`<div class="lst-pill" style="background:${col}">${priceK}</div>`,
+      iconSize:[44,18], iconAnchor:[22,9] });
+    const marker = L.marker([s.lat, s.lng], { icon, zIndexOffset:2000 })
+      .bindPopup(() => listingPopup(s), { maxWidth:260 })
+      .addTo(listingsLayer);
+    items.push({ s, marker });
+  });
+  listingItems = items;
+  maybeBuildSidebar();
+});
+listingsLayer.addTo(map); // on by default
+
+// Overlay toggle control — listings, school score bands, basketball
+const overlays = {
+  "Listings": listingsLayer,
+  "Schools · 10": bandLayers[10],
+  "Schools · 9": bandLayers[9],
+  "Schools · 8": bandLayers[8],
+  "Schools · 7": bandLayers[7],
+  "Schools · 6": bandLayers[6],
+  "Basketball": basketballLayer
+};
+L.control.layers(null, overlays, { collapsed:false, position:"topleft" }).addTo(map);
+
+// Toggling a school score-band re-gates the district fills (a district greys out
+// once none of its visible schools remain in an active band).
+const bandLayerScore = new Map(BANDS.map(b => [bandLayers[b], b]));
+function onOverlayToggle(e, add) {
+  if (!bandLayerScore.has(e.layer)) return;
+  const b = bandLayerScore.get(e.layer);
+  if (add) activeBands.add(b); else activeBands.delete(b);
+  if (perDistrictReady) applyBands();
+}
+map.on("overlayadd", e => onOverlayToggle(e, true));
+map.on("overlayremove", e => onOverlayToggle(e, false));
 
 // Legend
 const legend = L.control({ position:"topright" });
@@ -280,35 +470,98 @@ legend.onAdd = () => {
     <div class="row"><span class="swatch" style="background:#b91c1c"></span> 1–3 · lower half of PA</div>
     <div class="row" style="margin-top:6px"><span style="color:#1e293b">★</span> work
       &nbsp; <span style="display:inline-block;width:9px;height:9px;background:#ea580c;transform:rotate(45deg);margin:0 3px"></span> basketball</div>
-    <div class="row" style="margin-top:4px;font-weight:600">School dots (toggle, top-left):</div>
-    <div class="row"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#2563eb"></span> elementary
-      &nbsp;<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#7c3aed"></span> middle
-      &nbsp;<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#0f766e"></span> high</div>
-    <div class="note">Score = the selected grade band's rank within Pennsylvania (more discriminating than a national scale, where these suburbs all bunch near the top). Borders are real Census lines. School dots are NCES locations for the 9 suburban districts (Philly's 221 omitted); click one to open it on GreatSchools.</div>`;
+    <div class="row" style="margin-top:4px;font-weight:600">Listings (rent/mo):</div>
+    <div class="row"><span style="background:#15803d;color:#fff;padding:1px 5px;border-radius:5px;font-size:10px">under $3k</span>
+      &nbsp;<span style="background:#d97706;color:#fff;padding:1px 5px;border-radius:5px;font-size:10px">$3–3.5k</span></div>
+    <div class="row" style="margin-top:4px;font-weight:600">School dots — PA score 6–10 (toggle, top-left):</div>
+    <div class="row"><span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:#15803d"></span> 10
+      &nbsp;<span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:#16a34a"></span> 9
+      &nbsp;<span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:#65a30d"></span> 8
+      &nbsp;<span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:#ca8a04"></span> 7
+      &nbsp;<span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:#d97706"></span> 6</div>
+    <div class="note">Covers 37 districts within ~20 mi of Lansdale. District fill = the average of its schools' scores for the selected grade band(s); school dots = each school's own 1–10. Both from PA state proficiency (2018 EDFacts), so fill and dots are on one scale. Only schools scoring 6–10 are shown (1–5 hidden). Borders are real Census lines.</div>`;
   return div;
 };
 legend.addTo(map);
 
-// Dev-only auto-reload: polls the source files over plain HTTP and reloads the
-// tab when any change. Active only on localhost, so it's inert if hosted elsewhere.
-// Uses HTTP (not a WebSocket) so it works across the WSL → Windows browser boundary.
+// ── Demographic overlay (race/ethnicity by Census tract, ACS via CDC SVI 2022) ──
+let tractGeo = null, tractLayer = null, demoMetric = "", demoLegendCtrl = null;
+const DEMO_LABEL = { white:"% White", black:"% Black", asian:"% Asian", hispanic:"% Hispanic" };
+const DEMO_BREAKS = [[75,"#4a1486"],[50,"#6a51a3"],[30,"#807dba"],[15,"#9e9ac8"],[5,"#cbc9e2"],[0,"#f2f0f7"]];
+function rampColor(p) {
+  if (p == null) return "#e9e9e9";
+  for (const [thr, col] of DEMO_BREAKS) if (p >= thr) return col;
+  return "#f2f0f7";
+}
+function demoRow(k, pr) {
+  const lbl = { white:"White", black:"Black", asian:"Asian", hispanic:"Hispanic" }[k];
+  const v = pr[k];
+  return `<div${k === demoMetric ? ' style="font-weight:700"' : ""}>${lbl}: ${v == null ? "—" : v + "%"}</div>`;
+}
+function updateDemoLegend() {
+  if (demoLegendCtrl) { map.removeControl(demoLegendCtrl); demoLegendCtrl = null; }
+  if (!demoMetric) return;
+  demoLegendCtrl = L.control({ position:"topright" });
+  demoLegendCtrl.onAdd = () => {
+    const d = L.DomUtil.create("div", "legend");
+    d.innerHTML = `<h4>${DEMO_LABEL[demoMetric]} · by tract</h4>` +
+      [["75–100%","#4a1486"],["50–75%","#6a51a3"],["30–50%","#807dba"],["15–30%","#9e9ac8"],["5–15%","#cbc9e2"],["0–5%","#f2f0f7"]]
+        .map(([t,c]) => `<div class="row"><span class="swatch" style="background:${c}"></span> ${t}</div>`).join("") +
+      `<div class="note">ACS 2018–22 (CDC SVI). Census tracts, not districts. "White" = non-Hispanic.</div>`;
+    return d;
+  };
+  demoLegendCtrl.addTo(map);
+}
+fetch("tracts.geojson").then(r => r.json()).then(g => { tractGeo = g; if (demoMetric) setDemo(demoMetric); });
+function setDemo(metric) {
+  demoMetric = metric;
+  if (tractLayer) { map.removeLayer(tractLayer); tractLayer = null; }
+  entries.forEach(({ label }) => label.setOpacity(metric ? 0 : 1));   // hide district numbers under the overlay
+  updateDemoLegend();
+  if (!metric || !tractGeo) return;
+  tractLayer = L.geoJSON(tractGeo, {
+    style: f => ({ fillColor: rampColor(f.properties[demoMetric]), fillOpacity:0.75, color:"#ffffff", weight:0.3 }),
+    onEachFeature: (f, lyr) => {
+      const pr = f.properties;
+      lyr.bindPopup(
+        `<h3 style="margin-bottom:2px">Census tract</h3>
+         <div class="pop-meta">${pr.totpop != null ? Number(pr.totpop).toLocaleString() + " residents" : ""}</div>
+         <div class="pop-rank">${demoRow("white",pr)}${demoRow("black",pr)}${demoRow("asian",pr)}${demoRow("hispanic",pr)}</div>`,
+        { maxWidth:200 });
+    }
+  }).addTo(map);
+}
+document.getElementById("demoSelect").addEventListener("change", e => setDemo(e.target.value));
+
+// Dev auto-reload: polls the source files over plain HTTP and reloads the tab on
+// any change. Uses HTTP (not a WebSocket) so it works across the WSL → Windows
+// browser boundary. Active on any non-HTTPS host (localhost OR a LAN/WSL IP), so
+// it works however you open the page; inert on a real HTTPS deployment.
 (function () {
-  if (!/^(localhost|127\.0\.0\.1|0\.0\.0\.0)$/.test(location.hostname)) return;
-  const files = ["index.html", "schools.json", "districts.geojson"];
+  if (location.protocol === "https:") return;
+  const files = ["index.html", "schools.json", "districts.geojson", "districts_scores.json", "listings.json", "school_boundaries.geojson", "tracts.geojson"];
   const stamps = {};
-  let primed = false;
+  let primed = false, beat = 0;
+  // Visible heartbeat so you can SEE it polling (and confirm it's alive).
+  const badge = document.createElement("div");
+  badge.style.cssText = "position:fixed;left:8px;bottom:8px;z-index:9999;font:11px/1 Inter,sans-serif;" +
+    "background:#111;color:#7CFC9A;padding:4px 8px;border-radius:6px;opacity:.85;box-shadow:0 1px 4px rgba(0,0,0,.4)";
+  badge.textContent = "● live-reload on";
+  document.body.appendChild(badge);
   async function check() {
-    let changed = false;
+    let changed = false, ok = false;
     for (const f of files) {
       try {
         const r = await fetch(f + "?_=" + Date.now(), { method: "HEAD", cache: "no-store" });
+        ok = true;
         const tag = r.headers.get("last-modified") || r.headers.get("etag") || r.headers.get("content-length");
         if (primed && stamps[f] !== tag) changed = true;
         stamps[f] = tag;
       } catch (e) { /* server momentarily down (e.g. restart) — ignore */ }
     }
+    if (ok) { beat++; badge.textContent = "● live-reload on " + (beat % 2 ? "·" : ":"); }
     if (!primed) { primed = true; return; }
-    if (changed) location.reload();
+    if (changed) { badge.textContent = "↻ reloading…"; location.reload(); }
   }
   setInterval(check, 1000);
   check();
