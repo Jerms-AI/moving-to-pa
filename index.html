@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Moving to PA — School-District Quality Map</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  :root {
+    --ink: #1f2421;
+    --muted: #5f6c5d;
+    --paper: #f6f4ef;
+    --accent: #c2410c;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    display: flex; flex-direction: column; height: 100vh;
+  }
+  header {
+    padding: 12px 20px; border-bottom: 1px solid #e2ddd2; background: #fffdf9;
+    display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+  }
+  header .title h1 {
+    font-family: "Fraunces", Georgia, serif; font-weight: 600;
+    font-size: 20px; margin: 0; letter-spacing: -0.01em;
+  }
+  header .title .sub { color: var(--muted); font-size: 12.5px; }
+  .toggle { display: flex; gap: 0; margin-left: auto; border: 1px solid #d8d2c5; border-radius: 8px; overflow: hidden; }
+  .toggle button {
+    font: inherit; font-size: 13px; font-weight: 500; border: none; cursor: pointer;
+    padding: 7px 14px; background: #fffdf9; color: var(--muted); border-left: 1px solid #e2ddd2;
+  }
+  .toggle button:first-child { border-left: none; }
+  .toggle button.active { background: var(--accent); color: #fff; }
+  .toggle .band-grades { font-size: 11px; opacity: .8; display: block; font-weight: 400; }
+  #map { flex: 1; width: 100%; }
+
+  .legend {
+    background: #fffdf9; border: 1px solid #e2ddd2; border-radius: 8px;
+    padding: 10px 12px; font-size: 12px; line-height: 1.5; box-shadow: 0 1px 4px rgba(0,0,0,.12);
+  }
+  .legend h4 { margin: 0 0 6px; font-size: 12px; font-weight: 600; }
+  .legend .row { display: flex; align-items: center; gap: 7px; }
+  .legend .swatch { width: 14px; height: 14px; border-radius: 3px; border: 1px solid rgba(0,0,0,.25); }
+  .legend .note { margin-top: 6px; color: var(--muted); max-width: 190px; }
+
+  .score-label {
+    background: transparent; border: none; box-shadow: none;
+    font-weight: 700; font-size: 14px; color: #fff;
+    text-shadow: 0 1px 2px rgba(0,0,0,.6), 0 0 3px rgba(0,0,0,.5);
+    text-align: center;
+  }
+  .leaflet-popup-content { font-size: 13px; line-height: 1.45; }
+  .leaflet-popup-content h3 { margin: 0 0 2px; font-size: 15px; }
+  .pop-score { display:inline-block; color:#fff; font-weight:700; border-radius:6px; padding:1px 8px; font-size:13px; }
+  .pop-band { font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); margin-left:6px; }
+  .pop-meta { color: var(--muted); margin: 4px 0; }
+  .pop-trend { color: var(--accent); font-size: 12px; margin-top: 4px; }
+  .pop-rank { font-size: 12px; margin-top: 4px; color: #374151; }
+  .pop-config { color: var(--muted); font-size: 11.5px; margin-top: 4px; font-style: italic; }
+  .anchor-label { background: transparent; border: none; box-shadow: none; font-weight: 600; font-size: 12px; color: #1e293b; text-shadow: 0 1px 2px #fff, 0 0 3px #fff; }
+</style>
+</head>
+<body>
+<header>
+  <div class="title">
+    <h1>Moving to PA</h1>
+    <span class="sub">School districts near Lansdale, color-coded by quality <b>within Pennsylvania</b> (10 = best in PA). Pick a grade band; click a district for details.</span>
+  </div>
+  <div class="toggle" id="toggle">
+    <button data-band="elementary" class="active">Elementary<span class="band-grades">K–5</span></button>
+    <button data-band="middle">Middle<span class="band-grades">6–8</span></button>
+    <button data-band="high">High School<span class="band-grades">9–12</span></button>
+  </div>
+</header>
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// ── EDIT HERE ─────────────────────────────────────────────────────────────
+// Per-band PA-RELATIVE scores keyed by Census district GEOID.
+// 10 = best in Pennsylvania, 1 = worst. Anchored on PA state rank (SchoolDigger
+// percentile + Niche / U.S. News PA rank), mapped via fixed PA-percentile bands.
+// Scores are district-representative (multi-school averages) per band. 2025-26.
+const DISTRICTS = {
+  "4202400": { name:"Wissahickon", drive:"~18 min", config:"K–5 elem, 6–8 middle, 9–12 HS",
+    districtRank:"Niche #13 of 494 PA districts", trend:"HS ranking slipping slightly in recent years.",
+    elementary:{score:8, rank:"~top 10% of PA (Stony Creek top ~2%)", note:"Four K–5 schools, all strong; borderline 8/9."},
+    middle:{score:9, rank:"#46 of 873 PA middle schools (top 5%)", note:"Single Wissahickon Middle — clean top-5% figure."},
+    high:{score:9, rank:"#51 of 681 PA HS · U.S. News #21 PA", note:"Highest-ranked HS of the set."} },
+  "4219470": { name:"Colonial", drive:"~25 min", config:"K–3 + 4–5 elem, 6–8 middle, 9–12 HS",
+    districtRank:"Niche #10 of 496 PA districts",
+    elementary:{score:8, rank:"Colonial Elem #107 of 1,526 PA (top 7%)", note:"One large elementary, so this rank is genuinely representative."},
+    middle:{score:8, rank:"Colonial Middle ~top 6% of PA", note:"Firmly in the top-10% band."},
+    high:{score:9, rank:"Plymouth-Whitemarsh #28 of 686 PA (top 4%)", note:"Strongest band."} },
+  "4205310": { name:"Central Bucks", drive:"~25 min", config:"K–6 elem, 7–9 middle, 10–12 HS",
+    districtRank:"Niche #32 of 494 PA districts",
+    elementary:{score:7, rank:"~top 12–18% of PA (15-school avg; Cold Spring top ~2%)", note:"Huge district — average sits well below its best school. Estimated."},
+    middle:{score:7, rank:"~top 10–15% of PA (5-school avg; Holicong top ~3%)", note:"Conservative district average; could be an 8."},
+    high:{score:8, rank:"CB East #35 of 686 PA (top 5%); West/South lower", note:"3-school average ~top 10%."} },
+  "4224390": { name:"Upper Dublin", drive:"~22 min", config:"K–5 elem, 6–8 middle, 9–12 HS",
+    districtRank:"Niche #15 of 494 PA districts", trend:"HS slipping: #27 PA (2024) → #39 (2025).",
+    elementary:{score:9, rank:"~top 5–7% of PA (Fort Washington #5, Maple Glen top ~3%)", note:"Elite and consistent; borderline 8/9."},
+    middle:{score:8, rank:"Sandy Run #47 of 873 PA (top 5%)", note:"Just outside the top-5% cut for a 9."},
+    high:{score:7, rank:"Upper Dublin HS #73 of 674 PA (top 11%)", note:"Top-20% band — the PA scale is harsher here than national."} },
+  "4222560": { name:"Spring-Ford Area", drive:"~28 min", config:"K–4 elem, 5–7 & 8–9 grade centers, 10–12 HS",
+    districtRank:"Niche 2026 #10 reported but UNCONFIRMED (historically ~#24 PA)",
+    elementary:{score:7, rank:"~top 12–18% of PA (Upper Providence top ~3%, others mid)", note:"Wide spread; estimated district average."},
+    middle:{score:9, rank:"8th-Grade Center #36 of 893 PA (top 4%)", note:"Grade-center model — only the tested 8th center ranks; uncertain."},
+    high:{score:8, rank:"Spring-Ford SHS #52 of 681 PA (top 8%)", note:"Longest regular drive of the set."} },
+  "4217280": { name:"North Penn", drive:"0 min (work)", config:"K–6 elem (6th still elementary), 7–9 middle, 10–12 HS",
+    districtRank:"Niche #60 of 494 PA districts",
+    elementary:{score:6, rank:"~top 23% of PA (13-school avg, range #174–#608)", note:"Wide spread pulls the average down. 6th grade is still elementary here."},
+    middle:{score:6, rank:"~top 24% of PA (Pennbrook strong, Penndale weak)", note:"Penndale (~#359/873) drags the 7–9 average."},
+    high:{score:7, rank:"North Penn HS #124 of 681 PA · U.S. News #87 PA", note:"Top-20% band. Shortest commute, most rentals."} },
+  "4214250": { name:"Methacton", drive:"~22 min", config:"K–4 elem + 5–6 Skyview, 7–8 Arcola middle, 9–12 HS",
+    districtRank:"Niche #57 of 494 PA districts",
+    elementary:{score:7, rank:"~top 15% of PA (Worcester top ~4%, Eagleville weak)", note:"Uneven across schools; estimated."},
+    middle:{score:7, rank:"Arcola Intermediate #125 of 873 PA (top 14%)", note:"Single 7–8 school."},
+    high:{score:7, rank:"Methacton HS #174/686 (SchoolDigger) vs #76 PA (U.S. News)", note:"Wide source spread → moderate uncertainty."} },
+  "4221870": { name:"Souderton Area", drive:"~14 min", config:"K–5 elem, 6–8 middle, 9–12 HS",
+    districtRank:"Niche #49 of 494 PA districts",
+    elementary:{score:6, rank:"~top 23% of PA (6-school avg; mostly estimated)", note:"Least-certain band — one exact rank plus star-rating estimates."},
+    middle:{score:6, rank:"~top 23% of PA (Indian Valley #103 vs Indian Crest #304)", note:"The two middles differ sharply."},
+    high:{score:7, rank:"Souderton HS #72 of 681 PA (top 11%)", note:"Both sources agree; borderline 8. More affordable, close-in north."} },
+  "4211610": { name:"Hatboro-Horsham", drive:"~22 min", config:"K–5 elem, 6–8 middle, 9–12 HS",
+    districtRank:"Niche #117 of 494 PA districts",
+    elementary:{score:6, rank:"~top 32% of PA (Simmons #393, Blair Mill #571)", note:"Near the 6/5 boundary; estimated."},
+    middle:{score:7, rank:"Keith Valley #143 of 873 PA (top 16%)", note:"The district's strongest band — middle outscores the high school."},
+    high:{score:6, rank:"Hatboro-Horsham HS #268/686 PA · U.S. News #200 PA", note:"Weakest HS of the set; ~top 34%."} },
+  "4218990": { name:"Philadelphia (neighborhood)", drive:"~45 min", config:"varies by catchment (magnets excluded)",
+    districtRank:"SchoolDigger #473 of 606 PA districts (magnets included)", trend:"Citywide magnets (Masterman, Central) would score ~9–10 but are lottery/test-in.",
+    elementary:{score:2, rank:"neighborhood avg ~bottom 25–35% of PA", note:"Bimodal; a few catchments (Penn Alexander, Meredith) reach mid-pack."},
+    middle:{score:1, rank:"neighborhood avg below top-80% of PA", note:"Weakest band; magnets excluded."},
+    high:{score:1, rank:"neighborhood avg bottom ~10–20% (e.g. South Philadelphia #656/681)", note:"Magnets excluded."} }
+};
+
+// Point markers (single locations, not areas). Coordinates approximate.
+const POINTS = [
+  { kind:"work", lat:40.2415, lng:-75.2838, label:"Lansdale", popup:"<h3>Lansdale</h3><div class='pop-meta'>Wife's workplace — an anchor for the search.</div>" },
+  { kind:"work", lat:40.2086, lng:-75.3128, label:"Merck (West Point)", popup:"<h3>Merck — West Point campus</h3><div class='pop-meta'>770 Sumneytown Pike, West Point, PA (Upper Gwynedd). Work location, ~5 min southwest of Lansdale.</div>" },
+  { kind:"hoops", lat:40.2725, lng:-75.2810, label:"CAL Sports", popup:"<h3>CAL Sports Academy</h3><div class='pop-meta'>Basketball training + AAU travel teams (5th–10th grade), Lansdale. Strongest fit for the 6th grader. Spring tryouts Jan–Feb.</div>" },
+  { kind:"hoops", lat:40.2418, lng:-75.2730, label:"North Penn YMCA", popup:"<h3>North Penn YMCA</h3><div class='pop-meta'>Year-round instructional + rec basketball leagues, Lansdale.</div>" }
+];
+// ──────────────────────────────────────────────────────────────────────────
+
+const BAND_LABEL = { elementary:"Elementary", middle:"Middle", high:"High School" };
+let currentBand = "elementary";
+
+function colorFor(score) {
+  if (score >= 8.5) return "#15803d"; // deep green
+  if (score >= 8.0) return "#4d9221"; // green
+  if (score >= 7.0) return "#a3a30a"; // yellow-green
+  if (score >= 6.0) return "#ca8a04"; // amber
+  if (score >= 4.0) return "#d97706"; // orange
+  return "#b91c1c";                   // red
+}
+
+function popupHtml(geoid, band) {
+  const d = DISTRICTS[geoid];
+  const b = d[band];
+  const c = colorFor(b.score);
+  return `<h3>${d.name}</h3>
+    <span class="pop-score" style="background:${c}">${b.score} / 10</span><span class="pop-band">${BAND_LABEL[band]} · PA scale</span>
+    <div class="pop-meta">${d.districtRank}</div>
+    <div class="pop-rank"><b>${BAND_LABEL[band]} rank:</b> ${b.rank}</div>
+    <div>${b.note}</div>
+    <div class="pop-config">Drive to Lansdale: ${d.drive} · ${d.config}</div>
+    ${d.trend ? `<div class="pop-trend">${d.trend}</div>` : ""}`;
+}
+
+const map = L.map("map", { zoomControl:false }).setView([40.22, -75.30], 11);
+L.control.zoom({ position:"bottomright" }).addTo(map);
+L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+  attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · © <a href="https://carto.com/attributions">CARTO</a>',
+  maxZoom: 19
+}).addTo(map);
+
+const entries = []; // { geoid, layer, label }
+
+fetch("districts.geojson").then(r => r.json()).then(geo => {
+  const layer = L.geoJSON(geo, {
+    style: f => styleFor(f.properties.GEOID),
+    onEachFeature: (f, lyr) => {
+      const geoid = f.properties.GEOID;
+      if (!DISTRICTS[geoid]) return;
+      lyr.bindPopup(popupHtml(geoid, currentBand), { maxWidth:280 });
+      lyr.on("mouseover", () => lyr.setStyle({ weight:3, fillOpacity:0.65 }));
+      lyr.on("mouseout",  () => lyr.setStyle({ weight:1.5, fillOpacity:0.5 }));
+      const center = lyr.getBounds().getCenter();
+      const label = L.marker(center, {
+        interactive:false,
+        icon: L.divIcon({ className:"score-label", html:String(DISTRICTS[geoid][currentBand].score), iconSize:[34,18] })
+      }).addTo(map);
+      entries.push({ geoid, layer:lyr, label });
+    }
+  }).addTo(map);
+  map.fitBounds(layer.getBounds(), { padding:[30,30] });
+});
+
+function styleFor(geoid) {
+  const d = DISTRICTS[geoid];
+  const c = d ? colorFor(d[currentBand].score) : "#888";
+  return { color:c, weight:1.5, opacity:0.9, fillColor:c, fillOpacity:0.5 };
+}
+
+function applyBand(band) {
+  currentBand = band;
+  entries.forEach(({ geoid, layer, label }) => {
+    layer.setStyle(styleFor(geoid));
+    layer.setPopupContent(popupHtml(geoid, band));
+    label.setIcon(L.divIcon({ className:"score-label", html:String(DISTRICTS[geoid][band].score), iconSize:[34,18] }));
+  });
+}
+
+// Toggle wiring
+document.getElementById("toggle").addEventListener("click", e => {
+  const btn = e.target.closest("button");
+  if (!btn) return;
+  document.querySelectorAll("#toggle button").forEach(b => b.classList.toggle("active", b === btn));
+  applyBand(btn.dataset.band);
+});
+
+// Point markers
+POINTS.forEach(p => {
+  const isWork = p.kind === "work";
+  const html = isWork
+    ? `<div style="font-size:20px;line-height:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.5))">★</div>`
+    : `<div style="width:13px;height:13px;background:#ea580c;transform:rotate(45deg);border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.5)"></div>`;
+  L.marker([p.lat, p.lng], {
+    zIndexOffset:1000,
+    icon: L.divIcon({ className:"", html, iconSize:isWork?[22,22]:[16,16], iconAnchor:isWork?[11,11]:[8,8] })
+  }).addTo(map).bindPopup(p.popup)
+    .bindTooltip(p.label, { permanent:true, direction:"right", offset:[10,0], className:"anchor-label" });
+});
+
+// Legend
+const legend = L.control({ position:"topright" });
+legend.onAdd = () => {
+  const div = L.DomUtil.create("div", "legend");
+  div.innerHTML = `
+    <h4>PA score (10 = best in Pennsylvania)</h4>
+    <div class="row"><span class="swatch" style="background:#15803d"></span> 9–10 · top ~5% of PA</div>
+    <div class="row"><span class="swatch" style="background:#4d9221"></span> 8 · top ~10%</div>
+    <div class="row"><span class="swatch" style="background:#a3a30a"></span> 7 · top ~20%</div>
+    <div class="row"><span class="swatch" style="background:#ca8a04"></span> 6 · top ~35%</div>
+    <div class="row"><span class="swatch" style="background:#d97706"></span> 4–5 · top ~50–65%</div>
+    <div class="row"><span class="swatch" style="background:#b91c1c"></span> 1–3 · lower half of PA</div>
+    <div class="row" style="margin-top:6px"><span style="color:#1e293b">★</span> work
+      &nbsp; <span style="display:inline-block;width:9px;height:9px;background:#ea580c;transform:rotate(45deg);margin:0 3px"></span> basketball</div>
+    <div class="note">Score = the selected grade band's rank within Pennsylvania (more discriminating than a national scale, where these suburbs all bunch near the top). Borders are real Census lines.</div>`;
+  return div;
+};
+legend.addTo(map);
+</script>
+</body>
+</html>
