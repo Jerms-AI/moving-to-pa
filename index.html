@@ -225,18 +225,46 @@ document.getElementById("toggle").addEventListener("click", e => {
   applyBand(btn.dataset.band);
 });
 
-// Point markers
+// Point markers — work pins always on; basketball in a toggleable layer
+const basketballLayer = L.layerGroup();
 POINTS.forEach(p => {
   const isWork = p.kind === "work";
   const html = isWork
     ? `<div style="font-size:20px;line-height:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.5))">★</div>`
     : `<div style="width:13px;height:13px;background:#ea580c;transform:rotate(45deg);border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.5)"></div>`;
-  L.marker([p.lat, p.lng], {
+  const m = L.marker([p.lat, p.lng], {
     zIndexOffset:1000,
     icon: L.divIcon({ className:"", html, iconSize:isWork?[22,22]:[16,16], iconAnchor:isWork?[11,11]:[8,8] })
-  }).addTo(map).bindPopup(p.popup)
+  }).bindPopup(p.popup)
     .bindTooltip(p.label, { permanent:true, direction:"right", offset:[10,0], className:"anchor-label" });
+  if (isWork) m.addTo(map); else m.addTo(basketballLayer);
 });
+basketballLayer.addTo(map); // on by default, toggleable
+
+// Individual school locations (toggleable, off by default) — NCES 2023-24 geocodes
+const SCHOOL_COLOR = { elementary:"#2563eb", middle:"#7c3aed", high:"#0f766e", other:"#6b7280" };
+const SCHOOL_LABEL = { elementary:"Elementary", middle:"Middle / Intermediate", high:"High", other:"School" };
+const schoolsLayer = L.layerGroup();
+fetch("schools.json").then(r => r.json()).then(list => {
+  list.forEach(s => {
+    const c = SCHOOL_COLOR[s.level] || "#6b7280";
+    const icon = L.divIcon({ className:"",
+      html:`<div style="width:10px;height:10px;border-radius:50%;background:${c};border:1.5px solid #fff;box-shadow:0 1px 2px rgba(0,0,0,.5)"></div>`,
+      iconSize:[10,10], iconAnchor:[5,5] });
+    const q = encodeURIComponent(`${s.name} ${s.city} PA`);
+    L.marker([s.lat, s.lng], { icon }).bindPopup(
+      `<h3 style="margin-bottom:2px">${s.name}</h3>
+       <div class="pop-band">${SCHOOL_LABEL[s.level]} · ${s.district}</div>
+       <div class="pop-meta">${s.city}, PA</div>
+       <div class="pop-rank"><a href="https://www.greatschools.org/search/search.page?q=${q}" target="_blank" rel="noopener">Learn more on GreatSchools ↗</a></div>`,
+      { maxWidth:240 }
+    ).addTo(schoolsLayer);
+  });
+});
+
+// Overlay toggle control (Schools off by default, Basketball on)
+L.control.layers(null, { "School locations": schoolsLayer, "Basketball": basketballLayer },
+  { collapsed:false, position:"topleft" }).addTo(map);
 
 // Legend
 const legend = L.control({ position:"topright" });
@@ -252,10 +280,39 @@ legend.onAdd = () => {
     <div class="row"><span class="swatch" style="background:#b91c1c"></span> 1–3 · lower half of PA</div>
     <div class="row" style="margin-top:6px"><span style="color:#1e293b">★</span> work
       &nbsp; <span style="display:inline-block;width:9px;height:9px;background:#ea580c;transform:rotate(45deg);margin:0 3px"></span> basketball</div>
-    <div class="note">Score = the selected grade band's rank within Pennsylvania (more discriminating than a national scale, where these suburbs all bunch near the top). Borders are real Census lines.</div>`;
+    <div class="row" style="margin-top:4px;font-weight:600">School dots (toggle, top-left):</div>
+    <div class="row"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#2563eb"></span> elementary
+      &nbsp;<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#7c3aed"></span> middle
+      &nbsp;<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#0f766e"></span> high</div>
+    <div class="note">Score = the selected grade band's rank within Pennsylvania (more discriminating than a national scale, where these suburbs all bunch near the top). Borders are real Census lines. School dots are NCES locations for the 9 suburban districts (Philly's 221 omitted); click one to open it on GreatSchools.</div>`;
   return div;
 };
 legend.addTo(map);
+
+// Dev-only auto-reload: polls the source files over plain HTTP and reloads the
+// tab when any change. Active only on localhost, so it's inert if hosted elsewhere.
+// Uses HTTP (not a WebSocket) so it works across the WSL → Windows browser boundary.
+(function () {
+  if (!/^(localhost|127\.0\.0\.1|0\.0\.0\.0)$/.test(location.hostname)) return;
+  const files = ["index.html", "schools.json", "districts.geojson"];
+  const stamps = {};
+  let primed = false;
+  async function check() {
+    let changed = false;
+    for (const f of files) {
+      try {
+        const r = await fetch(f + "?_=" + Date.now(), { method: "HEAD", cache: "no-store" });
+        const tag = r.headers.get("last-modified") || r.headers.get("etag") || r.headers.get("content-length");
+        if (primed && stamps[f] !== tag) changed = true;
+        stamps[f] = tag;
+      } catch (e) { /* server momentarily down (e.g. restart) — ignore */ }
+    }
+    if (!primed) { primed = true; return; }
+    if (changed) location.reload();
+  }
+  setInterval(check, 1000);
+  check();
+})();
 </script>
 </body>
 </html>
