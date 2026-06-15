@@ -41,7 +41,23 @@
   .demo-ctrl select { font: inherit; font-size: 13px; padding: 5px 8px; border: 1px solid #d8d2c5; border-radius: 8px; background: #fffdf9; color: var(--ink); cursor: pointer; }
   #main { flex: 1; display: flex; min-height: 0; }
   #sidebar { width: 340px; flex: none; overflow-y: auto; background: #efece5; border-right: 1px solid #e2ddd2; padding-bottom: 44px; }
+  #rightbar { width: 230px; flex: none; overflow-y: auto; background: #efece5; border-left: 1px solid #e2ddd2; padding-bottom: 20px; }
   #map { flex: 1; min-width: 0; }
+
+  .dcard { margin: 7px 8px; background: #fff; border: 1px solid #e2ddd2; border-radius: 8px;
+    padding: 7px 9px; cursor: pointer; display: flex; align-items: center; gap: 9px;
+    transition: box-shadow .12s, border-color .12s; }
+  .dcard.hl { box-shadow: 0 3px 12px rgba(0,0,0,.16); border-color: var(--accent); }
+  .dcard-score { flex: none; width: 30px; height: 30px; border-radius: 7px; color: #fff;
+    font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+  .dcard-body { min-width: 0; flex: 1; }
+  .dcard.top { border-color: #b8860b; box-shadow: 0 0 0 2px #f3d27a inset; background: #fffdf3; }
+  .dcard-rank { flex: none; align-self: flex-start; font-size: 11px; font-weight: 700; color: #92670b;
+    background: #f6e6b8; border-radius: 6px; padding: 2px 6px; }
+  .dcard-name { font-size: 12.5px; font-weight: 600; color: var(--ink); line-height: 1.15; }
+  .dcard-emh { font-size: 11px; color: var(--muted); margin-top: 1px; }
+  .dcard-demo { font-size: 10.5px; color: #6b7280; margin-top: 3px; line-height: 1.3; }
+  .dcard-demo .bpct { font-weight: 800; font-size: 12.5px; color: #0f1420; }
 
   .side-head { padding: 10px 14px; font-size: 12px; color: var(--muted); font-weight: 600;
     position: sticky; top: 0; background: #efece5; border-bottom: 1px solid #e2ddd2; z-index: 1; }
@@ -113,6 +129,7 @@
 <div id="main">
   <aside id="sidebar"></aside>
   <div id="map"></div>
+  <aside id="rightbar"></aside>
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -200,6 +217,7 @@ Promise.all([
     }
   }).addTo(map);
   map.fitBounds(layer.getBounds(), { padding:[30,30] });
+  buildDistrictCards();
 });
 
 // District gating: a district stays colored only if it contains at least one school
@@ -263,6 +281,7 @@ document.getElementById("toggle").addEventListener("click", e => {
   btn.classList.toggle("active", sel.has(b));
   applyBands();
   if (typeof applySchoolLevelFilter === "function") applySchoolLevelFilter();
+  if (typeof buildDistrictCards === "function") buildDistrictCards();
 });
 
 // Point markers — work pins always on; basketball in a toggleable layer
@@ -386,6 +405,62 @@ function highlightMarker(marker, on) {
   marker.setZIndexOffset(on ? 5000 : 2000);
 }
 
+function buildDistrictCards() {
+  const wrap = document.getElementById("rightbar");
+  if (!wrap || !scoresReady) return;
+  const rows = [];
+  for (const g in DISTRICTS) {
+    const d = DISTRICTS[g];
+    rows.push({ g, name: d.name, sc: selScore(g),
+      e: d.elementary && d.elementary.score, m: d.middle && d.middle.score, h: d.high && d.high.score });
+  }
+  rows.sort((a, b) => (b.sc ?? -1) - (a.sc ?? -1));
+
+  // Composite "fit" rank — priority: elementary+middle rating, then Black %, then closeness.
+  const fit = rows.map(r => {
+    const d = DISTRICTS[r.g];
+    const em = (r.e != null && r.m != null) ? (r.e + r.m) / 2 : (r.e ?? r.m);
+    return { g: r.g, em, black: d.demo ? d.demo.black : null, mi: d.mi };
+  });
+  const maxBlack = Math.max(1, ...fit.map(i => i.black ?? 0));
+  const maxMi = Math.max(1, ...fit.map(i => i.mi ?? 0));
+  fit.forEach(i => {
+    const sN = (i.em ?? 0) / 10;
+    const bN = (i.black ?? 0) / maxBlack;
+    const dN = 1 - ((i.mi ?? maxMi) / maxMi);
+    i.score = 0.70 * sN + 0.20 * bN + 0.10 * dN;   // schools weigh most, then Black %, then closeness
+  });
+  fit.sort((a, b) => b.score - a.score);
+  const rankOf = new Map(fit.slice(0, 5).map((i, idx) => [i.g, idx + 1]));
+
+  wrap.innerHTML = `<div class="side-head">${rows.length} districts · ★ = best fit (schools · Black % · distance)</div>`;
+  rows.forEach(r => {
+    const col = r.sc == null ? "#94a3b8" : colorFor(r.sc);
+    const dm = DISTRICTS[r.g].demo;
+    const demoLine = dm
+      ? `<div class="dcard-demo">W ${dm.white}% · <span class="bpct">B ${dm.black}%</span> · A ${dm.asian}% · H ${dm.hispanic}%</div>`
+      : "";
+    const rank = rankOf.get(r.g);
+    const card = document.createElement("div");
+    card.className = rank ? "dcard top" : "dcard";
+    card.innerHTML =
+      `<div class="dcard-score" style="background:${col}">${r.sc == null ? "–" : fmt(r.sc)}</div>
+       <div class="dcard-body">
+         <div class="dcard-name">${r.name}</div>
+         <div class="dcard-emh">E ${r.e ?? "–"} · M ${r.m ?? "–"} · H ${r.h ?? "–"}</div>
+         ${demoLine}
+       </div>
+       ${rank ? `<div class="dcard-rank">★ ${rank}</div>` : ""}`;
+    const ent = entries.find(e => e.geoid === r.g);
+    if (ent) {
+      card.addEventListener("mouseenter", () => { ent.layer.setStyle({ weight:3, fillOpacity:0.72 }); card.classList.add("hl"); });
+      card.addEventListener("mouseleave", () => { ent.layer.setStyle(styleFor(r.g)); card.classList.remove("hl"); });
+      card.addEventListener("click", () => { map.fitBounds(ent.layer.getBounds(), { padding:[40,40], maxZoom:12 }); ent.layer.openPopup(); });
+    }
+    wrap.appendChild(card);
+  });
+}
+
 function buildSidebar(items) {
   const wrap = document.getElementById("sidebar");
   wrap.innerHTML = `<div class="side-head">${items.length} listings · hover a card to locate it</div>`;
@@ -478,8 +553,7 @@ legend.onAdd = () => {
       &nbsp;<span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:#16a34a"></span> 9
       &nbsp;<span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:#65a30d"></span> 8
       &nbsp;<span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:#ca8a04"></span> 7
-      &nbsp;<span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:#d97706"></span> 6</div>
-    <div class="note">Covers 37 districts within ~20 mi of Lansdale. District fill = the average of its schools' scores for the selected grade band(s); school dots = each school's own 1–10. Both from PA state proficiency (2018 EDFacts), so fill and dots are on one scale. Only schools scoring 6–10 are shown (1–5 hidden). Borders are real Census lines.</div>`;
+      &nbsp;<span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:#d97706"></span> 6</div>`;
   return div;
 };
 legend.addTo(map);
