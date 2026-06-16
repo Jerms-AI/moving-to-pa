@@ -39,6 +39,9 @@
   .toggle .band-grades { font-size: 11px; opacity: .8; display: block; font-weight: 400; }
   .demo-ctrl { display: flex; align-items: center; gap: 6px; margin-left: 14px; font-size: 12px; color: var(--muted); }
   .demo-ctrl select { font: inherit; font-size: 13px; padding: 5px 8px; border: 1px solid #d8d2c5; border-radius: 8px; background: #fffdf9; color: var(--ink); cursor: pointer; }
+  .ideal-btn { margin-left: 10px; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+    padding: 7px 14px; border: 1px solid #d8b24a; border-radius: 8px; background: #fffdf3; color: #92670b; }
+  .ideal-btn.active { background: #92670b; color: #fff; border-color: #92670b; }
   #main { flex: 1; display: flex; min-height: 0; }
   #sidebar { width: 340px; flex: none; overflow-y: auto; background: #efece5; border-right: 1px solid #e2ddd2; padding-bottom: 44px; }
   #rightbar { width: 230px; flex: none; overflow-y: auto; background: #efece5; border-left: 1px solid #e2ddd2; padding-bottom: 20px; }
@@ -125,6 +128,7 @@
       <option value="hispanic">% Hispanic</option>
     </select>
   </div>
+  <button id="idealBtn" class="ideal-btn">★ Ideal</button>
 </header>
 <div id="main">
   <aside id="sidebar"></aside>
@@ -250,18 +254,57 @@ function districtHasActiveSchool(geoid) {
   return arr ? arr.some(s => schoolVisible(s.level, s.score)) : false;
 }
 
+// "Ideal" focus mode: show only the top-5 best-fit districts (and the schools +
+// apartments inside them), hide everything else.
+let idealOn = false, idealSet = new Set(), idealNames = new Set(), idealSaved = null;
+
 function labelFor(geoid) {
+  if (idealOn && !idealSet.has(geoid)) return L.divIcon({ className:"score-label", html:"", iconSize:[34,18] });
   const s = selScore(geoid);
   const show = s != null && districtHasActiveSchool(geoid);
   return L.divIcon({ className:"score-label", html: show ? fmt(s) : "", iconSize:[34,18] });
 }
 
 function styleFor(geoid) {
+  if (idealOn && !idealSet.has(geoid)) return { opacity:0, fillOpacity:0, weight:0 };
   const s = DISTRICTS[geoid] ? selScore(geoid) : null;
+  if (idealOn && idealSet.has(geoid)) {
+    const cc = s == null ? "#94a3b8" : colorFor(s);
+    return { color:"#92670b", weight:3, opacity:1, fillColor:cc, fillOpacity:0.62 };
+  }
   if (s == null || !districtHasActiveSchool(geoid))
     return { color:"#d8d3c9", weight:0.5, opacity:0.6, fillColor:"#e7e3da", fillOpacity:0.12 };
   const c = colorFor(s);
   return { color:c, weight:1.5, opacity:0.9, fillColor:c, fillOpacity:0.5 };
+}
+
+function setIdeal(on) {
+  if (on === idealOn) return;
+  idealOn = on;
+  const ctrl = document.querySelector(".leaflet-control-layers");
+  if (on) {
+    idealSaved = {
+      basketball: map.hasLayer(basketballLayer),
+      demo: demoMetric,
+      center: map.getCenter(), zoom: map.getZoom()
+    };
+    map.removeLayer(basketballLayer);   // hide basketball (keep schools + apartments in the 5 districts)
+    if (demoMetric) { document.getElementById("demoSelect").value = ""; setDemo(""); }
+    if (ctrl) ctrl.style.display = "none";
+    applyBands();                // hides the non-ideal districts
+    applySchoolLevelFilter();    // keeps only school dots inside the 5 districts
+    applyListingFilter();        // keeps only apartments inside the 5 districts
+    const layers = entries.filter(e => idealSet.has(e.geoid)).map(e => e.layer);
+    if (layers.length) map.fitBounds(L.featureGroup(layers).getBounds(), { padding:[50,50] });
+  } else {
+    if (idealSaved.basketball) basketballLayer.addTo(map);
+    if (ctrl) ctrl.style.display = "";
+    applyBands();
+    applySchoolLevelFilter();
+    applyListingFilter();
+    if (idealSaved.demo) { document.getElementById("demoSelect").value = idealSaved.demo; setDemo(idealSaved.demo); }
+    map.setView(idealSaved.center, idealSaved.zoom);
+  }
 }
 
 function applyBands() {
@@ -333,14 +376,23 @@ function dimDistricts(on) {
   });
 }
 
-const schoolMarkers = []; // { m, level, score } — for grade-band show/hide
+const schoolMarkers = []; // { m, level, score, district } — for grade-band & ideal show/hide
 function applySchoolLevelFilter() {
-  schoolMarkers.forEach(({ m, level, score }) => {
+  schoolMarkers.forEach(({ m, level, score, district }) => {
     const gated = level === "elementary" || level === "middle" || level === "high";
-    const want = gated ? sel.has(level) : sel.size > 0;   // grade-center/intermediate: show if any band on
+    let want = gated ? sel.has(level) : sel.size > 0;   // grade-center/intermediate: show if any band on
+    if (idealOn) want = want && idealNames.has(district);   // ideal: only schools in the 5 districts
     const grp = bandLayers[score];
     if (want && !grp.hasLayer(m)) grp.addLayer(m);
     else if (!want && grp.hasLayer(m)) grp.removeLayer(m);
+  });
+}
+function applyListingFilter() {
+  if (!listingItems) return;
+  listingItems.forEach(({ s, marker }) => {
+    const want = !idealOn || idealSet.has(s.geoid);   // ideal: only apartments in the 5 districts
+    if (want && !listingsLayer.hasLayer(marker)) listingsLayer.addLayer(marker);
+    else if (!want && listingsLayer.hasLayer(marker)) listingsLayer.removeLayer(marker);
   });
 }
 
@@ -365,7 +417,7 @@ fetch("schools.json").then(r => r.json()).then(list => {
     m.on("mouseover", () => { if (showSchoolBoundary(s.id, c)) dimDistricts(true); });
     m.on("mouseout",  () => { clearSchoolBoundary(); dimDistricts(false); });
     m.addTo(bandLayers[s.score]);
-    schoolMarkers.push({ m, level: s.level, score: s.score });
+    schoolMarkers.push({ m, level: s.level, score: s.score, district: s.district });
   });
   applySchoolLevelFilter();   // honor the default grade-band selection
 });
@@ -432,6 +484,9 @@ function buildDistrictCards() {
   });
   fit.sort((a, b) => b.score - a.score);
   const rankOf = new Map(fit.slice(0, 5).map((i, idx) => [i.g, idx + 1]));
+  idealSet = new Set(rankOf.keys());
+  idealNames = new Set([...idealSet].map(g => DISTRICTS[g].name));
+  if (idealOn) { applyBands(); applySchoolLevelFilter(); applyListingFilter(); }
 
   wrap.innerHTML = `<div class="side-head">${rows.length} districts · ★ = best fit (schools · Black % · distance)</div>`;
   rows.forEach(r => {
@@ -606,6 +661,11 @@ function setDemo(metric) {
   }).addTo(map);
 }
 document.getElementById("demoSelect").addEventListener("change", e => setDemo(e.target.value));
+document.getElementById("idealBtn").addEventListener("click", e => {
+  const on = !idealOn;
+  e.currentTarget.classList.toggle("active", on);
+  setIdeal(on);
+});
 
 // Dev auto-reload: polls the source files over plain HTTP and reloads the tab on
 // any change. Uses HTTP (not a WebSocket) so it works across the WSL → Windows
