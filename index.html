@@ -55,6 +55,7 @@
     font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center; }
   .dcard-body { min-width: 0; flex: 1; }
   .dcard.top { border-color: #b8860b; box-shadow: 0 0 0 2px #f3d27a inset; background: #fffdf3; }
+  .dcard.selected { border-color: #2563eb; box-shadow: 0 0 0 2px #93c5fd inset; background: #f3f8ff; }
   .dcard-rank { flex: none; align-self: flex-start; font-size: 11px; font-weight: 700; color: #92670b;
     background: #f6e6b8; border-radius: 6px; padding: 2px 6px; }
   .dcard-name { font-size: 12.5px; font-weight: 600; color: var(--ink); line-height: 1.15; }
@@ -215,6 +216,7 @@ Promise.all([
       lyr.bindPopup(popupHtml(geoid), { maxWidth:280 });
       lyr.on("mouseover", () => lyr.setStyle({ weight:3, fillOpacity:0.7 }));
       lyr.on("mouseout",  () => lyr.setStyle(styleFor(geoid)));
+      lyr.on("click",     () => highlightDistrictCard(geoid));
       const center = lyr.getBounds().getCenter();
       const label = L.marker(center, { interactive:false, icon: labelFor(geoid) }).addTo(map);
       entries.push({ geoid, layer:lyr, label });
@@ -389,10 +391,9 @@ function applySchoolLevelFilter() {
 }
 function applyListingFilter() {
   if (!listingItems) return;
-  listingItems.forEach(({ s, marker }) => {
-    const want = !idealOn || idealSet.has(s.geoid);   // ideal: only apartments in the 5 districts
-    if (want && !listingsLayer.hasLayer(marker)) listingsLayer.addLayer(marker);
-    else if (!want && listingsLayer.hasLayer(marker)) listingsLayer.removeLayer(marker);
+  // Apartments always stay on the map — including in Ideal mode.
+  listingItems.forEach(({ marker }) => {
+    if (!listingsLayer.hasLayer(marker)) listingsLayer.addLayer(marker);
   });
 }
 
@@ -457,6 +458,14 @@ function highlightMarker(marker, on) {
   marker.setZIndexOffset(on ? 5000 : 2000);
 }
 
+let selectedGeoid = null;
+function highlightDistrictCard(geoid) {
+  selectedGeoid = geoid;
+  document.querySelectorAll("#rightbar .dcard.selected").forEach(c => c.classList.remove("selected"));
+  const card = document.querySelector(`#rightbar .dcard[data-geoid="${geoid}"]`);
+  if (card) { card.classList.add("selected"); card.scrollIntoView({ block:"center", behavior:"smooth" }); }
+}
+
 function buildDistrictCards() {
   const wrap = document.getElementById("rightbar");
   if (!wrap || !scoresReady) return;
@@ -498,6 +507,8 @@ function buildDistrictCards() {
     const rank = rankOf.get(r.g);
     const card = document.createElement("div");
     card.className = rank ? "dcard top" : "dcard";
+    card.dataset.geoid = r.g;
+    if (r.g === selectedGeoid) card.classList.add("selected");
     card.innerHTML =
       `<div class="dcard-score" style="background:${col}">${r.sc == null ? "–" : fmt(r.sc)}</div>
        <div class="dcard-body">
