@@ -12,3 +12,8 @@ npm-debug.log*
 # Scratch
 *.tmp
 .cache/
+
+# Realtor email source files (personal; kept local)
+*.eml
+*.htm
+email*.html
