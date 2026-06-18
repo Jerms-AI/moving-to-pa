@@ -101,6 +101,10 @@
     min-height: 32px; border: 1px solid #d8d2c5; border-radius: 6px; padding: 5px 7px; background: #fffdf9; color: var(--ink); }
   .lcard-note::placeholder { color: #aaa39a; }
   .lcard.rated { border-color: #e0a106; box-shadow: 0 0 0 1px #f0d486; }
+  .note-tools { display: flex; gap: 5px; margin-top: 6px; }
+  .note-tools button { font: inherit; font-size: 11px; padding: 3px 8px; cursor: pointer;
+    border: 1px solid #d8d2c5; border-radius: 6px; background: #fffdf9; color: var(--muted); }
+  .note-tools button:hover { border-color: var(--accent); color: var(--accent); }
 
   .lst-pill { color: #fff; font: 600 11px/1 Inter, sans-serif; padding: 3px 6px; border-radius: 6px;
     border: 1.5px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,.5); white-space: nowrap; transition: transform .1s; }
@@ -581,9 +585,47 @@ const setRate = (k, v) => v ? localStorage.setItem(k + ":rate", v) : localStorag
 const getNote = k => localStorage.getItem(k + ":note") || "";
 const setNote = (k, v) => v ? localStorage.setItem(k + ":note", v) : localStorage.removeItem(k + ":note");
 
+// Export/import all notes+ratings as a JSON file, so they survive across browsers,
+// devices, and the eventual move off localStorage.
+function exportNotes() {
+  const data = {};
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (k.startsWith("mp:")) data[k] = localStorage.getItem(k);
+  }
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: "application/json" }));
+  a.download = "movepa-notes.json";
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+function importNotes(file) {
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      const data = JSON.parse(r.result);
+      let n = 0;
+      Object.entries(data).forEach(([k, v]) => { if (k.startsWith("mp:")) { localStorage.setItem(k, v); n++; } });
+      if (listingItems) buildSidebar(listingItems);
+      alert(`Imported ${n} saved note/rating entries.`);
+    } catch (e) { alert("Couldn't read that notes file: " + e.message); }
+  };
+  r.readAsText(file);
+}
+
 function buildSidebar(items) {
   const wrap = document.getElementById("sidebar");
-  wrap.innerHTML = `<div class="side-head">${items.length} listings · hover a card to locate it</div>`;
+  wrap.innerHTML =
+    `<div class="side-head">${items.length} listings · hover a card to locate it
+       <div class="note-tools">
+         <button id="exportNotes" title="Download your notes & ratings as a file">⬇ Export notes</button>
+         <button id="importNotes" title="Load notes & ratings from a file">⬆ Import</button>
+         <input id="importFile" type="file" accept="application/json" hidden>
+       </div>
+     </div>`;
+  wrap.querySelector("#exportNotes").onclick = exportNotes;
+  wrap.querySelector("#importNotes").onclick = () => wrap.querySelector("#importFile").click();
+  wrap.querySelector("#importFile").onchange = e => { if (e.target.files[0]) importNotes(e.target.files[0]); };
   items.forEach(({ s, marker }) => {
     const col = BUDGET_COLOR[s.budget] || "#334155";
     const d = DISTRICTS[s.geoid];
