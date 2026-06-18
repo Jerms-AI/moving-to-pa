@@ -24,3 +24,6 @@ __pycache__/
 
 # PA assessment source spreadsheets (large, local)
 .assessment_src/
+
+# Personal listing notes (local, written by serve.py)
+notes.json
