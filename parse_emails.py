@@ -61,30 +61,46 @@ def budget(p):
     return "under" if p < 3000 else "ceiling" if p <= 3500 else "over"
 
 
+def _nominatim(q):
+    u = "https://nominatim.openstreetmap.org/search?" + urllib.parse.urlencode(
+        {"q": q, "format": "json", "limit": 1})
+    req = urllib.request.Request(u, headers={"User-Agent": "moving-to-pa/1.0"})
+    r = json.load(urllib.request.urlopen(req, timeout=20))
+    return (float(r[0]["lat"]), float(r[0]["lon"])) if r else None
+
+
 def geocode(addr, city, zc):
-    one = f"{addr}, {city}, PA, {zc}"
-    # 1) US Census
-    try:
-        u = ("https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?"
-             + urllib.parse.urlencode({"address": one, "benchmark": "Public_AR_Current", "format": "json"}))
-        r = json.load(urllib.request.urlopen(u, timeout=20))
-        m = r["result"]["addressMatches"]
-        if m:
-            c = m[0]["coordinates"]
-            return c["y"], c["x"]
-    except Exception as e:
-        print(f"  census fail: {e}", file=sys.stderr)
-    # 2) Nominatim fallback
-    try:
-        u = "https://nominatim.openstreetmap.org/search?" + urllib.parse.urlencode(
-            {"q": one, "format": "json", "limit": 1})
-        req = urllib.request.Request(u, headers={"User-Agent": "moving-to-pa/1.0"})
-        r = json.load(urllib.request.urlopen(req, timeout=20))
-        if r:
-            return float(r[0]["lat"]), float(r[0]["lon"])
-    except Exception as e:
-        print(f"  nominatim fail: {e}", file=sys.stderr)
-    return None, None
+    """Return (lat, lng, approx). approx=True means we only resolved to the
+    ZIP/town centroid (street address undisclosed/unmatched)."""
+    has_street = bool(re.match(r"\s*\d", addr))
+    if has_street:
+        one = f"{addr}, {city}, PA, {zc}"
+        # 1) US Census (exact)
+        try:
+            u = ("https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?"
+                 + urllib.parse.urlencode({"address": one, "benchmark": "Public_AR_Current", "format": "json"}))
+            m = json.load(urllib.request.urlopen(u, timeout=20))["result"]["addressMatches"]
+            if m:
+                c = m[0]["coordinates"]
+                return c["y"], c["x"], False
+        except Exception as e:
+            print(f"  census fail: {e}", file=sys.stderr)
+        # 2) Nominatim full address (exact)
+        try:
+            p = _nominatim(f"{addr}, {city}, PA {zc}")
+            if p:
+                return p[0], p[1], False
+        except Exception as e:
+            print(f"  nominatim fail: {e}", file=sys.stderr)
+    # 3) ZIP/town centroid (approximate) — for undisclosed or unmatched addresses
+    for q in (f"{zc}, PA", f"{city}, PA"):
+        try:
+            p = _nominatim(q)
+            if p:
+                return p[0], p[1], True
+        except Exception as e:
+            print(f"  centroid fail ({q}): {e}", file=sys.stderr)
+    return None, None, False
 
 
 def point_in_ring(x, y, ring):
@@ -139,21 +155,28 @@ def main():
         k = keyfor(L)
         L["budget"] = budget(L["priceNum"])
         L["bathOK"] = L["baths"] >= 2
-        if k in by_addr:
+        prev = by_addr.get(k)
+        if prev and prev.get("lat") is not None:
             # keep geocode/district from existing; refresh listing facts
-            prev = by_addr[k]
             for fld in ("lat", "lng", "geoid", "district"):
                 L[fld] = prev.get(fld)
+            if prev.get("approx"):
+                L["approx"] = True
             updated += 1
         else:
-            lat, lng = geocode(L["address"], L["city"], L["zip"])
+            # new listing, or a previously-ungeocoded one worth retrying
+            lat, lng, approx = geocode(L["address"], L["city"], L["zip"])
             L["lat"], L["lng"] = lat, lng
+            if approx:
+                L["approx"] = True
             if lat is not None:
                 L["geoid"], L["district"] = district_for(lat, lng, feats)
+                if approx:
+                    print(f"  ~ approx (ZIP centroid): {L['address']}, {L['city']} {L['zip']}", file=sys.stderr)
             else:
                 L["geoid"] = L["district"] = None
                 print(f"  !! could not geocode: {L['address']}, {L['city']}", file=sys.stderr)
-            new_count += 1
+            new_count += (0 if prev else 1)
             time.sleep(1)  # be polite to geocoders
         L.pop("_emailDate", None)
         by_addr[k] = L

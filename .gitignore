@@ -17,3 +17,7 @@ npm-debug.log*
 *.eml
 *.htm
 email*.html
+
+# Python
+__pycache__/
+*.pyc
