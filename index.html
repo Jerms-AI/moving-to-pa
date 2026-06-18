@@ -37,14 +37,30 @@
   .toggle button:first-child { border-left: none; }
   .toggle button.active { background: var(--accent); color: #fff; }
   .toggle .band-grades { font-size: 11px; opacity: .8; display: block; font-weight: 400; }
+  .search-ctrl { display: flex; }
+  .search-ctrl input { font: inherit; font-size: 13px; padding: 7px 10px; width: 230px;
+    border: 1px solid #d8d2c5; border-radius: 8px 0 0 8px; background: #fffdf9; color: var(--ink); }
+  .search-ctrl input::placeholder { color: #9aa39a; }
+  .search-ctrl button { font: inherit; font-size: 13px; padding: 7px 12px; cursor: pointer;
+    border: 1px solid var(--accent); border-left: none; border-radius: 0 8px 8px 0; background: var(--accent); color: #fff; }
   .demo-ctrl { display: flex; align-items: center; gap: 6px; margin-left: 14px; font-size: 12px; color: var(--muted); }
   .demo-ctrl select { font: inherit; font-size: 13px; padding: 5px 8px; border: 1px solid #d8d2c5; border-radius: 8px; background: #fffdf9; color: var(--ink); cursor: pointer; }
   .ideal-btn { margin-left: 10px; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
     padding: 7px 14px; border: 1px solid #d8b24a; border-radius: 8px; background: #fffdf3; color: #92670b; }
   .ideal-btn.active { background: #92670b; color: #fff; border-color: #92670b; }
-  #main { flex: 1; display: flex; min-height: 0; }
-  #sidebar { width: 340px; flex: none; overflow-y: auto; background: #efece5; border-right: 1px solid #e2ddd2; padding-bottom: 44px; }
-  #rightbar { width: 230px; flex: none; overflow-y: auto; background: #efece5; border-left: 1px solid #e2ddd2; padding-bottom: 20px; }
+  #main { flex: 1; display: flex; min-height: 0; position: relative; }
+  #sidebar { width: 340px; flex: none; overflow-y: auto; background: #efece5; border-right: 1px solid #e2ddd2; padding-bottom: 44px; transition: width .18s ease; }
+  #rightbar { width: 230px; flex: none; overflow-y: auto; background: #efece5; border-left: 1px solid #e2ddd2; padding-bottom: 20px; transition: width .18s ease; }
+  #main.l-collapsed #sidebar { width: 0; border-right: none; }
+  #main.r-collapsed #rightbar { width: 0; border-left: none; }
+  .col-toggle { position: absolute; top: 8px; z-index: 600; width: 20px; height: 34px;
+    display: flex; align-items: center; justify-content: center; font-size: 11px; cursor: pointer;
+    border: 1px solid #d8d2c5; background: #fffdf9; color: var(--muted); border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.15); transition: left .18s ease, right .18s ease; }
+  #toggleLeft { left: 314px; }
+  #main.l-collapsed #toggleLeft { left: 6px; }
+  #toggleRight { right: 204px; }
+  #main.r-collapsed #toggleRight { right: 6px; }
   #map { flex: 1; min-width: 0; }
 
   .dcard { margin: 7px 8px; background: #fff; border: 1px solid #e2ddd2; border-radius: 8px;
@@ -77,6 +93,14 @@
   .lcard-dist { font-size: 11.5px; color: var(--muted); margin-top: 3px; }
   .lcard-link { display: inline-block; margin-top: 6px; font-size: 12px; color: var(--accent); font-weight: 600; text-decoration: none; }
   .lcard-link:hover { text-decoration: underline; }
+  .lcard-meta { margin-top: 8px; padding-top: 8px; border-top: 1px dashed #d8d2c5; }
+  .lcard-rate { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+  .lcard-rate .star { cursor: pointer; font-size: 17px; line-height: 1; color: #cfc9bd; transition: color .1s; }
+  .lcard-rate .star:hover, .lcard-rate .star.on { color: #e0a106; }
+  .lcard-note { width: 100%; box-sizing: border-box; font: inherit; font-size: 12px; resize: vertical;
+    min-height: 32px; border: 1px solid #d8d2c5; border-radius: 6px; padding: 5px 7px; background: #fffdf9; color: var(--ink); }
+  .lcard-note::placeholder { color: #aaa39a; }
+  .lcard.rated { border-color: #e0a106; box-shadow: 0 0 0 1px #f0d486; }
 
   .lst-pill { color: #fff; font: 600 11px/1 Inter, sans-serif; padding: 3px 6px; border-radius: 6px;
     border: 1.5px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,.5); white-space: nowrap; transition: transform .1s; }
@@ -88,6 +112,10 @@
     padding: 10px 12px; font-size: 12px; line-height: 1.5; box-shadow: 0 1px 4px rgba(0,0,0,.12);
   }
   .legend h4 { margin: 0 0 6px; font-size: 12px; font-weight: 600; }
+  .legend--main h4 { cursor: pointer; user-select: none; display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 0; }
+  .legend--main:not(.collapsed) h4 { margin-bottom: 6px; }
+  .legend--main.collapsed .legend-body { display: none; }
+  .legend-caret { font-size: 10px; color: var(--muted); }
   .legend .row { display: flex; align-items: center; gap: 7px; }
   .legend .swatch { width: 14px; height: 14px; border-radius: 3px; border: 1px solid rgba(0,0,0,.25); }
   .legend .note { margin-top: 6px; color: var(--muted); max-width: 190px; }
@@ -113,12 +141,16 @@
 <header>
   <div class="title">
     <h1>Moving to PA</h1>
-    <span class="sub">School districts near Lansdale, color-coded by quality <b>within Pennsylvania</b> (10 = best in PA). Toggle one or more grade bands — the fill shows their average. Click a district for details.</span>
   </div>
+  <form class="search-ctrl" id="searchCtrl" autocomplete="off">
+    <input id="searchInput" type="text" placeholder="Search a town or address…" aria-label="Search a town or address" />
+    <button type="submit">Go</button>
+  </form>
   <div class="toggle" id="toggle">
     <button data-band="elementary" class="active">Elementary<span class="band-grades">K–5</span></button>
     <button data-band="middle" class="active">Middle<span class="band-grades">6–8</span></button>
     <button data-band="high">High School<span class="band-grades">9–12</span></button>
+    <button data-band="k8" class="active">K–8<span class="band-grades">one school</span></button>
   </div>
   <div class="demo-ctrl">
     <label for="demoSelect">Overlay</label>
@@ -139,7 +171,9 @@
 </header>
 <div id="main">
   <aside id="sidebar"></aside>
+  <button id="toggleLeft" class="col-toggle" title="Hide/show listings panel" aria-label="Toggle listings panel">◀</button>
   <div id="map"></div>
+  <button id="toggleRight" class="col-toggle" title="Hide/show districts panel" aria-label="Toggle districts panel">▶</button>
   <aside id="rightbar"></aside>
 </div>
 
@@ -161,7 +195,7 @@ const POINTS = [
 
 const BAND_LABEL = { elementary:"Elementary", middle:"Middle", high:"High School" };
 const BAND_KEYS = ["elementary", "middle", "high"];
-const sel = new Set(["elementary", "middle"]);   // multi-select; default covers the kids' bands
+const sel = new Set(["elementary", "middle", "k8"]);   // multi-select; default covers the kids' bands (+ combined K-8)
 const fmt = n => Number.isInteger(n) ? String(n) : n.toFixed(1);
 function selScore(geoid) {
   const d = DISTRICTS[geoid];
@@ -244,22 +278,23 @@ function buildPerDistrict() {
   schoolListRaw.forEach(s => {
     if (s.score == null || s.score < 6) return;
     const g = nameToGeoid[s.district];
-    if (g) (perDistrictSchools[g] = perDistrictSchools[g] || []).push({ level: s.level, score: s.score });
+    if (g) (perDistrictSchools[g] = perDistrictSchools[g] || []).push({ level: s.level, score: s.score, k8: !!s.k8 });
   });
   perDistrictReady = true;
   if (entries.length) applyBands();
 }
 // Mirror the school-dot visibility test: a district is colored only if it holds a
 // school that is currently visible (active score band AND active grade level).
-function schoolVisible(level, score) {
+function schoolVisible(level, score, k8) {
   if (!activeBands.has(score)) return false;
+  if (k8) return sel.has("k8");                // combined K-8 schools gated by their own toggle
   const gated = level === "elementary" || level === "middle" || level === "high";
   return gated ? sel.has(level) : sel.size > 0;
 }
 function districtHasActiveSchool(geoid) {
   if (!perDistrictReady) return true;          // before schools load, show all
   const arr = perDistrictSchools[geoid];
-  return arr ? arr.some(s => schoolVisible(s.level, s.score)) : false;
+  return arr ? arr.some(s => schoolVisible(s.level, s.score, s.k8)) : false;
 }
 
 // "Ideal" focus mode: show only the top-5 best-fit districts (and the schools +
@@ -352,9 +387,9 @@ POINTS.forEach(p => {
 basketballLayer.addTo(map); // on by default, toggleable
 
 // Individual school locations (all 10 districts incl. Philadelphia), colored by a
-// PA-relative 1–10 score computed from state proficiency (2018 EDFacts: reading +
-// math % proficient, ranked across ~2,800 PA schools). Grouped into score bands
-// you can toggle independently.
+// PA-relative 1–10 score computed from state proficiency (2024 PSSA grades 3–8 +
+// Keystone grade 11, % proficient/advanced, ranked across ~2,700 PA schools).
+// Grouped into score bands you can toggle independently.
 const BAND_COLOR = { 10:"#15803d", 9:"#16a34a", 8:"#65a30d", 7:"#ca8a04", 6:"#d97706" };
 const BANDS = [10, 9, 8, 7, 6];   // only show schools scoring 6–10; one toggle each
 const SCHOOL_LABEL = { elementary:"Elementary", middle:"Middle / Intermediate", high:"High", other:"School" };
@@ -384,11 +419,15 @@ function dimDistricts(on) {
   });
 }
 
-const schoolMarkers = []; // { m, level, score, district } — for grade-band & ideal show/hide
+const schoolMarkers = []; // { m, level, score, district, k8 } — for grade-band & ideal show/hide
 function applySchoolLevelFilter() {
-  schoolMarkers.forEach(({ m, level, score, district }) => {
-    const gated = level === "elementary" || level === "middle" || level === "high";
-    let want = gated ? sel.has(level) : sel.size > 0;   // grade-center/intermediate: show if any band on
+  schoolMarkers.forEach(({ m, level, score, district, k8 }) => {
+    let want;
+    if (k8) want = sel.has("k8");                          // combined K-8 schools: their own toggle
+    else {
+      const gated = level === "elementary" || level === "middle" || level === "high";
+      want = gated ? sel.has(level) : sel.size > 0;         // grade-center/intermediate: show if any band on
+    }
     if (idealOn) want = want && idealNames.has(district);   // ideal: only schools in the 5 districts
     const grp = bandLayers[score];
     if (want && !grp.hasLayer(m)) grp.addLayer(m);
@@ -415,7 +454,7 @@ fetch("schools.json").then(r => r.json()).then(list => {
     const q = encodeURIComponent(`${s.name} ${s.city} PA school ratings`);
     const m = L.marker([s.lat, s.lng], { icon }).bindPopup(
       `<h3 style="margin-bottom:2px">${s.name}</h3>
-       <span class="pop-score" style="background:${c}">${s.score} / 10</span><span class="pop-band">${SCHOOL_LABEL[s.level]} · ${s.district}</span>
+       <span class="pop-score" style="background:${c}">${s.score} / 10</span><span class="pop-band">${s.k8 ? "K–8" : SCHOOL_LABEL[s.level]} · ${s.district}</span>
        <div class="pop-rank">PA score ${s.score}/10 — state reading + math proficiency</div>
        <div class="pop-meta">${s.city}, PA${boundaryByNcessch[s.id] ? "" : " · no attendance-zone data"}</div>
        <div class="pop-rank"><a href="https://www.google.com/search?q=${q}" target="_blank" rel="noopener">Look up school info ↗</a></div>`,
@@ -424,7 +463,7 @@ fetch("schools.json").then(r => r.json()).then(list => {
     m.on("mouseover", () => { if (showSchoolBoundary(s.id, c)) dimDistricts(true); });
     m.on("mouseout",  () => { clearSchoolBoundary(); dimDistricts(false); });
     m.addTo(bandLayers[s.score]);
-    schoolMarkers.push({ m, level: s.level, score: s.score, district: s.district });
+    schoolMarkers.push({ m, level: s.level, score: s.score, district: s.district, k8: !!s.k8 });
   });
   applySchoolLevelFilter();   // honor the default grade-band selection
 });
@@ -534,6 +573,14 @@ function buildDistrictCards() {
   });
 }
 
+// Per-listing notes + 1–3 rating, saved in the browser (localStorage) so they
+// persist across reloads. Keyed by address+zip.
+function noteKey(s) { return "mp:" + (s.address + "|" + s.zip).toLowerCase().replace(/[^a-z0-9]+/g, "_"); }
+const getRate = k => +(localStorage.getItem(k + ":rate") || 0);
+const setRate = (k, v) => v ? localStorage.setItem(k + ":rate", v) : localStorage.removeItem(k + ":rate");
+const getNote = k => localStorage.getItem(k + ":note") || "";
+const setNote = (k, v) => v ? localStorage.setItem(k + ":note", v) : localStorage.removeItem(k + ":note");
+
 function buildSidebar(items) {
   const wrap = document.getElementById("sidebar");
   wrap.innerHTML = `<div class="side-head">${items.length} listings · hover a card to locate it</div>`;
@@ -541,8 +588,9 @@ function buildSidebar(items) {
     const col = BUDGET_COLOR[s.budget] || "#334155";
     const d = DISTRICTS[s.geoid];
     const sc = b => d && d[b] && d[b].score != null ? d[b].score : "–";
+    const k = noteKey(s);
     const card = document.createElement("div");
-    card.className = "lcard";
+    card.className = "lcard" + (getRate(k) ? " rated" : "");
     card.innerHTML =
       `${s.photo ? `<img src="${s.photo}" loading="lazy" alt="">` : ""}
        <div class="lcard-body">
@@ -551,11 +599,32 @@ function buildSidebar(items) {
          <div class="lcard-addr">${s.address}, ${s.city}</div>
          <div class="lcard-dist">${s.district || "—"} · E${sc("elementary")} M${sc("middle")} H${sc("high")}${s.bathOK ? "" : " · ⚠ 1 full bath"}</div>
          <a class="lcard-link" href="${listingUrl(s)}" target="_blank" rel="noopener">View details ↗</a>
-       </div>`;
+         <div class="lcard-meta">
+           <div class="lcard-rate"><span>Rate:</span><span class="star" data-r="1">★</span><span class="star" data-r="2">★</span><span class="star" data-r="3">★</span></div>
+           <textarea class="lcard-note" placeholder="Notes…" rows="2"></textarea>
+         </div>`;
     card.addEventListener("mouseenter", () => { highlightMarker(marker, true); card.classList.add("hl"); });
     card.addEventListener("mouseleave", () => { highlightMarker(marker, false); card.classList.remove("hl"); });
     card.addEventListener("click", () => { map.panTo(marker.getLatLng()); marker.openPopup(); });
     card.querySelector(".lcard-link").addEventListener("click", ev => ev.stopPropagation());
+
+    // rating stars
+    const stars = card.querySelectorAll(".star");
+    const paint = () => { const r = getRate(k); stars.forEach(st => st.classList.toggle("on", +st.dataset.r <= r)); };
+    paint();
+    stars.forEach(st => st.addEventListener("click", ev => {
+      ev.stopPropagation();
+      const v = +st.dataset.r;
+      setRate(k, getRate(k) === v ? 0 : v);   // click the current rating again to clear
+      paint();
+      card.classList.toggle("rated", !!getRate(k));
+    }));
+    // notes box (stop clicks from panning the map; save on every edit)
+    const note = card.querySelector(".lcard-note");
+    note.value = getNote(k);
+    note.addEventListener("input", () => setNote(k, note.value));
+    ["click", "mousedown", "dblclick"].forEach(e => note.addEventListener(e, ev => ev.stopPropagation()));
+
     wrap.appendChild(card);
   });
 }
@@ -590,7 +659,7 @@ const overlays = {
   "Schools · 6": bandLayers[6],
   "Basketball": basketballLayer
 };
-L.control.layers(null, overlays, { collapsed:false, position:"topleft" }).addTo(map);
+L.control.layers(null, overlays, { collapsed:true, position:"topleft" }).addTo(map);
 
 // Toggling a school score-band re-gates the district fills (a district greys out
 // once none of its visible schools remain in an active band).
@@ -607,9 +676,10 @@ map.on("overlayremove", e => onOverlayToggle(e, false));
 // Legend
 const legend = L.control({ position:"topright" });
 legend.onAdd = () => {
-  const div = L.DomUtil.create("div", "legend");
+  const div = L.DomUtil.create("div", "legend legend--main");
   div.innerHTML = `
-    <h4>PA score (10 = best in Pennsylvania)</h4>
+    <h4 class="legend-head">PA score (10 = best in PA) <span class="legend-caret">▾</span></h4>
+    <div class="legend-body">
     <div class="row"><span class="swatch" style="background:#15803d"></span> 9–10 · top ~5% of PA</div>
     <div class="row"><span class="swatch" style="background:#4d9221"></span> 8 · top ~10%</div>
     <div class="row"><span class="swatch" style="background:#a3a30a"></span> 7 · top ~20%</div>
@@ -626,7 +696,13 @@ legend.onAdd = () => {
       &nbsp;<span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:#16a34a"></span> 9
       &nbsp;<span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:#65a30d"></span> 8
       &nbsp;<span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:#ca8a04"></span> 7
-      &nbsp;<span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:#d97706"></span> 6</div>`;
+      &nbsp;<span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:#d97706"></span> 6</div>
+    </div>`;
+  L.DomEvent.disableClickPropagation(div);
+  div.querySelector(".legend-head").addEventListener("click", () => {
+    const collapsed = div.classList.toggle("collapsed");
+    div.querySelector(".legend-caret").textContent = collapsed ? "▸" : "▾";
+  });
   return div;
 };
 legend.addTo(map);
@@ -721,6 +797,54 @@ document.getElementById("idealBtn").addEventListener("click", e => {
   const on = !idealOn;
   e.currentTarget.classList.toggle("active", on);
   setIdeal(on);
+});
+
+// ── Town / address search (keyless, Nominatim; biased to the Lansdale–Philly area) ──
+const searchLayer = L.layerGroup().addTo(map);
+async function runSearch(q) {
+  q = q.trim();
+  if (!q) return;
+  const input = document.getElementById("searchInput");
+  const hasState = /\b(pa|pennsylvania)\b/i.test(q);
+  const params = new URLSearchParams({
+    q: hasState ? q : q + ", PA",
+    format: "json", limit: "1", countrycodes: "us",
+    viewbox: "-75.85,40.65,-74.85,39.80", bounded: "0",
+  });
+  input.disabled = true;
+  try {
+    const r = await fetch("https://nominatim.openstreetmap.org/search?" + params, { headers: { Accept: "application/json" } });
+    const j = await r.json();
+    if (!j.length) { alert(`No match for "${q}"`); return; }
+    const hit = j[0], lat = +hit.lat, lng = +hit.lon;
+    searchLayer.clearLayers();
+    L.marker([lat, lng]).addTo(searchLayer)
+      .bindPopup(`<h3 style="margin-bottom:2px">${hit.display_name.split(",")[0]}</h3><div class="pop-meta">${hit.display_name}</div>`)
+      .openPopup();
+    map.flyTo([lat, lng], 14);
+  } catch (e) {
+    alert("Search failed: " + e.message);
+  } finally {
+    input.disabled = false;
+  }
+}
+document.getElementById("searchCtrl").addEventListener("submit", e => {
+  e.preventDefault();
+  runSearch(document.getElementById("searchInput").value);
+});
+
+// ── Collapse / expand the left (listings) and right (districts) columns ──
+const mainEl = document.getElementById("main");
+function toggleColumn(cls, btn, glyphOpen, glyphClosed) {
+  const collapsed = mainEl.classList.toggle(cls);
+  btn.textContent = collapsed ? glyphClosed : glyphOpen;
+  setTimeout(() => map.invalidateSize(), 200);   // let the width transition finish, then refit tiles
+}
+document.getElementById("toggleLeft").addEventListener("click", function () {
+  toggleColumn("l-collapsed", this, "◀", "▶");
+});
+document.getElementById("toggleRight").addEventListener("click", function () {
+  toggleColumn("r-collapsed", this, "▶", "◀");
 });
 
 // Dev auto-reload: polls the source files over plain HTTP and reloads the tab on

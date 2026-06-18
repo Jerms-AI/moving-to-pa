@@ -1,1 +1,995 @@
-{"4224540":{"name":"Upper Perkiomen","drive":"~17 mi (~30 min)","districtRank":"","trend":"","config":"","elementary":{"score":5,"rank":"avg of 2 schools (state proficiency)"},"middle":{"score":4,"rank":"avg of 1 school (state proficiency)"},"high":{"score":7,"rank":"avg of 1 school (state proficiency)"},"demo":{"white":87,"black":2,"asian":2,"hispanic":8,"tracts":6},"mi":14.9},"4205760":{"name":"Cheltenham","drive":"~14 mi (~25 min)","districtRank":"","trend":"","config":"","elementary":{"score":6,"rank":"avg of 4 schools (state proficiency)"},"middle":{"score":4,"rank":"avg of 1 school (state proficiency)"},"high":{"score":5,"rank":"avg of 1 school (state proficiency)"},"demo":{"white":47,"black":37,"asian":8,"hispanic":4,"tracts":10},"mi":13.7},"4211610":{"name":"Hatboro-Horsham","drive":"~22 min","districtRank":"Niche #117 of 494 PA districts","trend":"","config":"K\u20135 elem, 6\u20138 middle, 9\u201312 HS","elementary":{"score":6,"rank":"avg of 3 schools (state proficiency)"},"middle":{"score":5,"rank":"avg of 1 school (state proficiency)"},"high":{"score":5,"rank":"avg of 1 school (state proficiency)"},"demo":{"white":75,"black":5,"asian":8,"hispanic":8,"tracts":8},"mi":10.2},"4214160":{"name":"Lower Merion","drive":"~15 mi (~26 min)","districtRank":"","trend":"","config":"","elementary":{"score":8,"rank":"avg of 2 schools (state proficiency)"},"middle":{"score":7,"rank":"avg of 2 schools (state proficiency)"},"high":{"score":10,"rank":"avg of 2 schools (state proficiency)"},"demo":{"white":77,"black":6,"asian":8,"hispanic":4,"tracts":18},"mi":14.1},"4214190":{"name":"Lower Moreland Township","drive":"~14 mi (~25 min)","districtRank":"","trend":"","config":"","elementary":{"score":7,"rank":"avg of 1 school (state proficiency)"},"middle":null,"high":{"score":10,"rank":"avg of 1 school (state proficiency)"},"demo":{"white":79,"black":3,"asian":12,"hispanic":3,"tracts":4},"mi":13.6},"4218750":{"name":"Pennridge","drive":"~10 mi (~18 min)","districtRank":"","trend":"","config":"","elementary":{"score":7,"rank":"avg of 7 schools (state proficiency)"},"middle":{"score":5,"rank":"avg of 3 schools (state proficiency)"},"high":{"score":6,"rank":"avg of 1 school (state proficiency)"},"demo":{"white":89,"black":1,"asian":2,"hispanic":4,"tracts":10},"mi":12.0},"4206960":{"name":"Council Rock","drive":"~17 mi (~31 min)","districtRank":"","trend":"","config":"","elementary":{"score":7,"rank":"avg of 9 schools (state proficiency)"},"middle":{"score":6,"rank":"avg of 2 schools (state proficiency)"},"high":{"score":9,"rank":"avg of 2 schools (state proficiency)"},"demo":{"white":85,"black":1,"asian":5,"hispanic":3,"tracts":18},"mi":17.4},"4218330":{"name":"Palisades","drive":"~20 mi (~36 min)","districtRank":"","trend":"","config":"","elementary":{"score":7,"rank":"avg of 3 schools (state proficiency)"},"middle":{"score":4,"rank":"avg of 1 school (state proficiency)"},"high":{"score":8,"rank":"avg of 1 school (state proficiency)"},"demo":{"white":93,"black":1,"asian":1,"hispanic":2,"tracts":5},"mi":18.6},"4221870":{"name":"Souderton Area","drive":"~14 min","districtRank":"Niche #49 of 494 PA districts","trend":"","config":"K\u20135 elem, 6\u20138 middle, 9\u201312 HS","elementary":{"score":6,"rank":"avg of 6 schools (state proficiency)"},"middle":{"score":4,"rank":"avg of 2 schools (state proficiency)"},"high":{"score":8,"rank":"avg of 1 school (state proficiency)"},"demo":{"white":85,"black":3,"asian":3,"hispanic":7,"tracts":12},"mi":8.0},"4218930":{"name":"Perkiomen Valley","drive":"~9 mi (~16 min)","districtRank":"","trend":"","config":"","elementary":{"score":7,"rank":"avg of 4 schools (state proficiency)"},"middle":{"score":6,"rank":"avg of 2 schools (state proficiency)"},"high":{"score":9,"rank":"avg of 1 school (state proficiency)"},"demo":{"white":80,"black":8,"asian":4,"hispanic":5,"tracts":9},"mi":9.2},"4224480":{"name":"Upper Merion Area","drive":"~12 mi (~21 min)","districtRank":"","trend":"","config":"","elementary":{"score":6,"rank":"avg of 5 schools (state proficiency)"},"middle":{"score":5,"rank":"avg of 1 school (state proficiency)"},"high":{"score":7,"rank":"avg of 1 school (state proficiency)"},"demo":{"white":67,"black":7,"asian":16,"hispanic":5,"tracts":13},"mi":11.6},"4210870":{"name":"Great Valley","drive":"~19 mi (~34 min)","districtRank":"","trend":"","config":"","elementary":{"score":7,"rank":"avg of 4 schools (state proficiency)"},"middle":{"score":7,"rank":"avg of 1 school (state proficiency)"},"high":{"score":10,"rank":"avg of 1 school (state proficiency)"},"demo":{"white":70,"black":3,"asian":17,"hispanic":7,"tracts":8},"mi":18.9},"4216980":{"name":"Norristown Area","drive":"~8 mi (~15 min)","districtRank":"","trend":"","config":"","elementary":{"score":3,"rank":"avg of 6 schools (state proficiency)"},"middle":{"score":2,"rank":"avg of 3 schools (state proficiency)"},"high":{"score":3,"rank":"avg of 2 schools (state proficiency)"},"demo":{"white":49,"black":23,"asian":4,"hispanic":18,"tracts":15},"mi":9.1},"4219470":{"name":"Colonial","drive":"~25 min","districtRank":"Niche #10 of 496 PA districts","trend":"","config":"K\u20133 + 4\u20135 elem, 6\u20138 middle, 9\u201312 HS","elementary":{"score":8,"rank":"avg of 5 schools (state proficiency)"},"middle":{"score":6,"rank":"avg of 1 school (state proficiency)"},"high":{"score":9,"rank":"avg of 1 school (state proficiency)"},"demo":{"white":81,"black":5,"asian":6,"hispanic":4,"tracts":14},"mi":10.1},"4219680":{"name":"Pottstown","drive":"~19 mi (~34 min)","districtRank":"","trend":"","config":"","elementary":{"score":3,"rank":"avg of 4 schools (state proficiency)"},"middle":{"score":2,"rank":"avg of 1 school (state proficiency)"},"high":{"score":3,"rank":"avg of 1 school (state proficiency)"},"demo":{"white":60,"black":21,"asian":1,"hispanic":11,"tracts":8},"mi":19.3},"4222620":{"name":"Springfield Township","drive":"~11 mi (~19 min)","districtRank":"","trend":"","config":"","elementary":{"score":7,"rank":"avg of 1 school (state proficiency)"},"middle":{"score":6,"rank":"avg of 1 school (state proficiency)"},"high":{"score":7,"rank":"avg of 1 school (state proficiency)"},"demo":{"white":81,"black":9,"asian":3,"hispanic":3,"tracts":5},"mi":10.9},"4202040":{"name":"Abington","drive":"~13 mi (~23 min)","districtRank":"","trend":"","config":"","elementary":{"score":8,"rank":"avg of 1 school (state proficiency)"},"middle":{"score":5,"rank":"avg of 1 school (state proficiency)"},"high":{"score":8,"rank":"avg of 1 school (state proficiency)"},"demo":{"white":73,"black":11,"asian":4,"hispanic":6,"tracts":16},"mi":12.3},"4202400":{"name":"Wissahickon","drive":"~18 min","districtRank":"Niche #13 of 494 PA districts","trend":"HS ranking slipping slightly in recent years.","config":"K\u20135 elem, 6\u20138 middle, 9\u201312 HS","elementary":{"score":8,"rank":"avg of 4 schools (state proficiency)"},"middle":{"score":7,"rank":"avg of 1 school (state proficiency)"},"high":{"score":10,"rank":"avg of 1 school (state proficiency)"},"demo":{"white":73,"black":9,"asian":12,"hispanic":4,"tracts":10},"mi":5.3},"4223640":{"name":"Tredyffrin-Easttown","drive":"~16 mi (~28 min)","districtRank":"","trend":"","config":"","elementary":{"score":9,"rank":"avg of 5 schools (state proficiency)"},"middle":{"score":7,"rank":"avg of 2 schools (state proficiency)"},"high":{"score":10,"rank":"avg of 1 school (state proficiency)"},"demo":{"white":73,"black":2,"asian":18,"hispanic":3,"tracts":9},"mi":15.0},"4222560":{"name":"Spring-Ford Area","drive":"~28 min","districtRank":"Niche 2026 #10 (UNCONFIRMED; historically ~#24)","trend":"","config":"K\u20134 elem, 5\u20137 & 8\u20139 centers, 10\u201312 HS","elementary":{"score":7,"rank":"avg of 7 schools (state proficiency)"},"middle":{"score":7,"rank":"avg of 3 schools (state proficiency)"},"high":{"score":9,"rank":"avg of 1 school (state proficiency)"},"demo":{"white":82,"black":3,"asian":9,"hispanic":3,"tracts":11},"mi":12.8},"4219050":{"name":"Phoenixville Area","drive":"~15 mi (~28 min)","districtRank":"","trend":"","config":"","elementary":{"score":6,"rank":"avg of 3 schools (state proficiency)"},"middle":{"score":5,"rank":"avg of 1 school (state proficiency)"},"high":{"score":7,"rank":"avg of 1 school (state proficiency)"},"demo":{"white":84,"black":4,"asian":4,"hispanic":4,"tracts":8},"mi":14.2},"4203960":{"name":"Boyertown Area","drive":"~18 mi (~33 min)","districtRank":"","trend":"","config":"","elementary":{"score":6,"rank":"avg of 6 schools (state proficiency)"},"middle":{"score":6,"rank":"avg of 2 schools (state proficiency)"},"high":{"score":8,"rank":"avg of 1 school (state proficiency)"},"demo":{"white":92,"black":1,"asian":1,"hispanic":3,"tracts":11},"mi":17.6},"4218990":{"name":"Philadelphia City","drive":"~45 min","districtRank":"SchoolDigger #473 of 606 PA districts","trend":"Magnets (Masterman, Central) would score ~9\u201310 but are lottery/test-in.","config":"varies by catchment (magnets excluded)","elementary":{"score":2,"rank":"avg of 5 schools (state proficiency)"},"middle":{"score":2,"rank":"avg of 17 schools (state proficiency)"},"high":{"score":3,"rank":"avg of 27 schools (state proficiency)"},"demo":{"white":34,"black":39,"asian":8,"hispanic":16,"tracts":391},"mi":18.6},"4219920":{"name":"Radnor Township","drive":"~16 mi (~28 min)","districtRank":"","trend":"","config":"","elementary":{"score":9,"rank":"avg of 3 schools (state proficiency)"},"middle":{"score":7,"rank":"avg of 1 school (state proficiency)"},"high":{"score":10,"rank":"avg of 1 school (state proficiency)"},"demo":{"white":76,"black":5,"asian":9,"hispanic":6,"tracts":6},"mi":15.5},"4211670":{"name":"Haverford Township","drive":"~18 mi (~32 min)","districtRank":"","trend":"","config":"","elementary":{"score":8,"rank":"avg of 5 schools (state proficiency)"},"middle":{"score":7,"rank":"avg of 1 school (state proficiency)"},"high":{"score":10,"rank":"avg of 1 school (state proficiency)"},"demo":{"white":86,"black":3,"asian":4,"hispanic":3,"tracts":13},"mi":17.6},"4224390":{"name":"Upper Dublin","drive":"~22 min","districtRank":"Niche #15 of 494 PA districts","trend":"HS slipping: #27 PA (2024) \u2192 #39 (2025).","config":"K\u20135 elem, 6\u20138 middle, 9\u201312 HS","elementary":{"score":8,"rank":"avg of 4 schools (state proficiency)"},"middle":{"score":7,"rank":"avg of 1 school (state proficiency)"},"high":{"score":10,"rank":"avg of 1 school (state proficiency)"},"demo":{"white":80,"black":4,"asian":10,"hispanic":4,"tracts":7},"mi":8.3},"4224510":{"name":"Upper Moreland Township","drive":"~11 mi (~20 min)","districtRank":"","trend":"","config":"","elementary":null,"middle":{"score":4,"rank":"avg of 1 school (state proficiency)"},"high":{"score":7,"rank":"avg of 1 school (state proficiency)"},"demo":{"white":82,"black":4,"asian":3,"hispanic":5,"tracts":6},"mi":11.4},"4214760":{"name":"Marple Newtown","drive":"~19 mi (~34 min)","districtRank":"","trend":"","config":"","elementary":{"score":7,"rank":"avg of 4 schools (state proficiency)"},"middle":{"score":6,"rank":"avg of 1 school (state proficiency)"},"high":{"score":7,"rank":"avg of 1 school (state proficiency)"},"demo":{"white":87,"black":1,"asian":8,"hispanic":2,"tracts":8},"mi":19.4},"4205310":{"name":"Central Bucks","drive":"~25 min","districtRank":"Niche #32 of 494 PA districts","trend":"","config":"K\u20136 elem, 7\u20139 middle, 10\u201312 HS","elementary":{"score":7,"rank":"avg of 15 schools (state proficiency)"},"middle":{"score":6,"rank":"avg of 5 schools (state proficiency)"},"high":{"score":9,"rank":"avg of 3 schools (state proficiency)"},"demo":{"white":87,"black":2,"asian":5,"hispanic":3,"tracts":26},"mi":11.9},"4216410":{"name":"Neshaminy","drive":"~20 mi (~35 min)","districtRank":"","trend":"","config":"","elementary":{"score":6,"rank":"avg of 6 schools (state proficiency)"},"middle":{"score":4,"rank":"avg of 3 schools (state proficiency)"},"high":{"score":7,"rank":"avg of 1 school (state proficiency)"},"demo":{"white":82,"black":4,"asian":4,"hispanic":5,"tracts":15},"mi":19.3},"4217280":{"name":"North Penn","drive":"0 min (work)","districtRank":"Niche #60 of 494 PA districts","trend":"","config":"K\u20136 elem (6th still elementary), 7\u20139 middle, 10\u201312 HS","elementary":{"score":6,"rank":"avg of 13 schools (state proficiency)"},"middle":{"score":5,"rank":"avg of 3 schools (state proficiency)"},"high":{"score":8,"rank":"avg of 1 school (state proficiency)"},"demo":{"white":71,"black":6,"asian":17,"hispanic":4,"tracts":25},"mi":0.4},"4205190":{"name":"Centennial","drive":"~12 mi (~21 min)","districtRank":"","trend":"","config":"","elementary":{"score":4,"rank":"avg of 3 schools (state proficiency)"},"middle":{"score":3,"rank":"avg of 2 schools (state proficiency)"},"high":{"score":5,"rank":"avg of 1 school (state proficiency)"},"demo":{"white":87,"black":3,"asian":3,"hispanic":5,"tracts":12},"mi":11.8},"4219890":{"name":"Quakertown Community","drive":"~15 mi (~27 min)","districtRank":"","trend":"","config":"","elementary":{"score":5,"rank":"avg of 5 schools (state proficiency)"},"middle":{"score":4,"rank":"avg of 2 schools (state proficiency)"},"high":{"score":7,"rank":"avg of 1 school (state proficiency)"},"demo":{"white":87,"black":2,"asian":2,"hispanic":6,"tracts":8},"mi":14.5},"4216860":{"name":"New Hope-Solebury","drive":"~17 mi (~30 min)","districtRank":"","trend":"","config":"","elementary":{"score":7,"rank":"avg of 1 school (state proficiency)"},"middle":{"score":7,"rank":"avg of 1 school (state proficiency)"},"high":{"score":10,"rank":"avg of 1 school (state proficiency)"},"demo":{"white":86,"black":1,"asian":5,"hispanic":5,"tracts":4},"mi":17.7},"4214250":{"name":"Methacton","drive":"~22 min","districtRank":"Niche #57 of 494 PA districts","trend":"","config":"K\u20134 + 5\u20136 elem, 7\u20138 middle, 9\u201312 HS","elementary":{"score":7,"rank":"avg of 5 schools (state proficiency)"},"middle":{"score":6,"rank":"avg of 1 school (state proficiency)"},"high":{"score":8,"rank":"avg of 1 school (state proficiency)"},"demo":{"white":77,"black":5,"asian":12,"hispanic":3,"tracts":7},"mi":10.0},"4219650":{"name":"Pottsgrove","drive":"~18 mi (~32 min)","districtRank":"","trend":"","config":"","elementary":{"score":4,"rank":"avg of 1 school (state proficiency)"},"middle":{"score":4,"rank":"avg of 1 school (state proficiency)"},"high":{"score":5,"rank":"avg of 1 school (state proficiency)"},"demo":{"white":81,"black":8,"asian":2,"hispanic":5,"tracts":6},"mi":18.8},"4212420":{"name":"Jenkintown","drive":"~13 mi (~23 min)","districtRank":"","trend":"","config":"","elementary":{"score":7,"rank":"avg of 1 school (state proficiency)"},"middle":null,"high":{"score":5,"rank":"avg of 1 school (state proficiency)"},"demo":{"white":80,"black":9,"asian":2,"hispanic":7,"tracts":1},"mi":12.9}}
+{
+  "4224540": {
+    "name": "Upper Perkiomen",
+    "drive": "~17 mi (~30 min)",
+    "districtRank": "",
+    "trend": "",
+    "config": "",
+    "elementary": {
+      "score": 6,
+      "rank": "avg of 2 schools (2024 PSSA/Keystone)"
+    },
+    "middle": {
+      "score": 6,
+      "rank": "avg of 2 schools (2024 PSSA/Keystone)"
+    },
+    "high": {
+      "score": 5,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "demo": {
+      "white": 87,
+      "black": 2,
+      "asian": 2,
+      "hispanic": 8,
+      "tracts": 6
+    },
+    "mi": 14.9
+  },
+  "4205760": {
+    "name": "Cheltenham",
+    "drive": "~14 mi (~25 min)",
+    "districtRank": "",
+    "trend": "",
+    "config": "",
+    "elementary": {
+      "score": 7,
+      "rank": "avg of 4 schools (2024 PSSA/Keystone)"
+    },
+    "middle": {
+      "score": 3,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "high": {
+      "score": 5,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "demo": {
+      "white": 47,
+      "black": 37,
+      "asian": 8,
+      "hispanic": 4,
+      "tracts": 10
+    },
+    "mi": 13.7
+  },
+  "4211610": {
+    "name": "Hatboro-Horsham",
+    "drive": "~22 min",
+    "districtRank": "Niche #117 of 494 PA districts",
+    "trend": "",
+    "config": "K\u20135 elem, 6\u20138 middle, 9\u201312 HS",
+    "elementary": {
+      "score": 7,
+      "rank": "avg of 4 schools (2024 PSSA/Keystone)"
+    },
+    "middle": {
+      "score": 6,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "high": {
+      "score": 5,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "demo": {
+      "white": 75,
+      "black": 5,
+      "asian": 8,
+      "hispanic": 8,
+      "tracts": 8
+    },
+    "mi": 10.2
+  },
+  "4214160": {
+    "name": "Lower Merion",
+    "drive": "~15 mi (~26 min)",
+    "districtRank": "",
+    "trend": "",
+    "config": "",
+    "elementary": {
+      "score": 10,
+      "rank": "avg of 2 schools (2024 PSSA/Keystone)"
+    },
+    "middle": {
+      "score": 10,
+      "rank": "avg of 3 schools (2024 PSSA/Keystone)"
+    },
+    "high": {
+      "score": 10,
+      "rank": "avg of 2 schools (2024 PSSA/Keystone)"
+    },
+    "demo": {
+      "white": 77,
+      "black": 6,
+      "asian": 8,
+      "hispanic": 4,
+      "tracts": 18
+    },
+    "mi": 14.1
+  },
+  "4214190": {
+    "name": "Lower Moreland Township",
+    "drive": "~14 mi (~25 min)",
+    "districtRank": "",
+    "trend": "",
+    "config": "",
+    "elementary": {
+      "score": 10,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "middle": null,
+    "high": {
+      "score": 8,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "demo": {
+      "white": 79,
+      "black": 3,
+      "asian": 12,
+      "hispanic": 3,
+      "tracts": 4
+    },
+    "mi": 13.6
+  },
+  "4218750": {
+    "name": "Pennridge",
+    "drive": "~10 mi (~18 min)",
+    "districtRank": "",
+    "trend": "",
+    "config": "",
+    "elementary": {
+      "score": 9,
+      "rank": "avg of 7 schools (2024 PSSA/Keystone)"
+    },
+    "middle": {
+      "score": 7,
+      "rank": "avg of 3 schools (2024 PSSA/Keystone)"
+    },
+    "high": {
+      "score": 6,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "demo": {
+      "white": 89,
+      "black": 1,
+      "asian": 2,
+      "hispanic": 4,
+      "tracts": 10
+    },
+    "mi": 12.0
+  },
+  "4206960": {
+    "name": "Council Rock",
+    "drive": "~17 mi (~31 min)",
+    "districtRank": "",
+    "trend": "",
+    "config": "",
+    "elementary": {
+      "score": 9,
+      "rank": "avg of 10 schools (2024 PSSA/Keystone)"
+    },
+    "middle": {
+      "score": 10,
+      "rank": "avg of 2 schools (2024 PSSA/Keystone)"
+    },
+    "high": {
+      "score": 10,
+      "rank": "avg of 2 schools (2024 PSSA/Keystone)"
+    },
+    "demo": {
+      "white": 85,
+      "black": 1,
+      "asian": 5,
+      "hispanic": 3,
+      "tracts": 18
+    },
+    "mi": 17.4
+  },
+  "4218330": {
+    "name": "Palisades",
+    "drive": "~20 mi (~36 min)",
+    "districtRank": "",
+    "trend": "",
+    "config": "",
+    "elementary": {
+      "score": 10,
+      "rank": "avg of 3 schools (2024 PSSA/Keystone)"
+    },
+    "middle": {
+      "score": 5,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "high": {
+      "score": 5,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "demo": {
+      "white": 93,
+      "black": 1,
+      "asian": 1,
+      "hispanic": 2,
+      "tracts": 5
+    },
+    "mi": 18.6
+  },
+  "4221870": {
+    "name": "Souderton Area",
+    "drive": "~14 min",
+    "districtRank": "Niche #49 of 494 PA districts",
+    "trend": "",
+    "config": "K\u20135 elem, 6\u20138 middle, 9\u201312 HS",
+    "elementary": {
+      "score": 8,
+      "rank": "avg of 6 schools (2024 PSSA/Keystone)"
+    },
+    "middle": {
+      "score": 6,
+      "rank": "avg of 2 schools (2024 PSSA/Keystone)"
+    },
+    "high": {
+      "score": 8,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "demo": {
+      "white": 85,
+      "black": 3,
+      "asian": 3,
+      "hispanic": 7,
+      "tracts": 12
+    },
+    "mi": 8.0
+  },
+  "4218930": {
+    "name": "Perkiomen Valley",
+    "drive": "~9 mi (~16 min)",
+    "districtRank": "",
+    "trend": "",
+    "config": "",
+    "elementary": {
+      "score": 10,
+      "rank": "avg of 4 schools (2024 PSSA/Keystone)"
+    },
+    "middle": {
+      "score": 8,
+      "rank": "avg of 2 schools (2024 PSSA/Keystone)"
+    },
+    "high": {
+      "score": 8,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "demo": {
+      "white": 80,
+      "black": 8,
+      "asian": 4,
+      "hispanic": 5,
+      "tracts": 9
+    },
+    "mi": 9.2
+  },
+  "4224480": {
+    "name": "Upper Merion Area",
+    "drive": "~12 mi (~21 min)",
+    "districtRank": "",
+    "trend": "",
+    "config": "",
+    "elementary": {
+      "score": 7,
+      "rank": "avg of 5 schools (2024 PSSA/Keystone)"
+    },
+    "middle": {
+      "score": 5,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "high": {
+      "score": 5,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "demo": {
+      "white": 67,
+      "black": 7,
+      "asian": 16,
+      "hispanic": 5,
+      "tracts": 13
+    },
+    "mi": 11.6
+  },
+  "4210870": {
+    "name": "Great Valley",
+    "drive": "~19 mi (~34 min)",
+    "districtRank": "",
+    "trend": "",
+    "config": "",
+    "elementary": {
+      "score": 9,
+      "rank": "avg of 4 schools (2024 PSSA/Keystone)"
+    },
+    "middle": {
+      "score": 8,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "high": {
+      "score": 8,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "demo": {
+      "white": 70,
+      "black": 3,
+      "asian": 17,
+      "hispanic": 7,
+      "tracts": 8
+    },
+    "mi": 18.9
+  },
+  "4216980": {
+    "name": "Norristown Area",
+    "drive": "~8 mi (~15 min)",
+    "districtRank": "",
+    "trend": "",
+    "config": "",
+    "elementary": {
+      "score": 4,
+      "rank": "avg of 6 schools (2024 PSSA/Keystone)"
+    },
+    "middle": {
+      "score": 1,
+      "rank": "avg of 3 schools (2024 PSSA/Keystone)"
+    },
+    "high": {
+      "score": 1,
+      "rank": "avg of 2 schools (2024 PSSA/Keystone)"
+    },
+    "demo": {
+      "white": 49,
+      "black": 23,
+      "asian": 4,
+      "hispanic": 18,
+      "tracts": 15
+    },
+    "mi": 9.1
+  },
+  "4219470": {
+    "name": "Colonial",
+    "drive": "~25 min",
+    "districtRank": "Niche #10 of 496 PA districts",
+    "trend": "",
+    "config": "K\u20133 + 4\u20135 elem, 6\u20138 middle, 9\u201312 HS",
+    "elementary": {
+      "score": 10,
+      "rank": "avg of 5 schools (2024 PSSA/Keystone)"
+    },
+    "middle": {
+      "score": 10,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "high": {
+      "score": 10,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "demo": {
+      "white": 81,
+      "black": 5,
+      "asian": 6,
+      "hispanic": 4,
+      "tracts": 14
+    },
+    "mi": 10.1
+  },
+  "4219680": {
+    "name": "Pottstown",
+    "drive": "~19 mi (~34 min)",
+    "districtRank": "",
+    "trend": "",
+    "config": "",
+    "elementary": {
+      "score": 4,
+      "rank": "avg of 4 schools (2024 PSSA/Keystone)"
+    },
+    "middle": {
+      "score": 1,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "high": {
+      "score": 1,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "demo": {
+      "white": 60,
+      "black": 21,
+      "asian": 1,
+      "hispanic": 11,
+      "tracts": 8
+    },
+    "mi": 19.3
+  },
+  "4222620": {
+    "name": "Springfield Township",
+    "drive": "~11 mi (~19 min)",
+    "districtRank": "",
+    "trend": "",
+    "config": "",
+    "elementary": {
+      "score": 8,
+      "rank": "avg of 2 schools (2024 PSSA/Keystone)"
+    },
+    "middle": {
+      "score": 7,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "high": {
+      "score": 7,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "demo": {
+      "white": 81,
+      "black": 9,
+      "asian": 3,
+      "hispanic": 3,
+      "tracts": 5
+    },
+    "mi": 10.9
+  },
+  "4202040": {
+    "name": "Abington",
+    "drive": "~13 mi (~23 min)",
+    "districtRank": "",
+    "trend": "",
+    "config": "",
+    "elementary": {
+      "score": 10,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "middle": {
+      "score": 5,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "high": {
+      "score": 5,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "demo": {
+      "white": 73,
+      "black": 11,
+      "asian": 4,
+      "hispanic": 6,
+      "tracts": 16
+    },
+    "mi": 12.3
+  },
+  "4202400": {
+    "name": "Wissahickon",
+    "drive": "~18 min",
+    "districtRank": "Niche #13 of 494 PA districts",
+    "trend": "HS ranking slipping slightly in recent years.",
+    "config": "K\u20135 elem, 6\u20138 middle, 9\u201312 HS",
+    "elementary": {
+      "score": 10,
+      "rank": "avg of 4 schools (2024 PSSA/Keystone)"
+    },
+    "middle": {
+      "score": 8,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "high": {
+      "score": 8,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "demo": {
+      "white": 73,
+      "black": 9,
+      "asian": 12,
+      "hispanic": 4,
+      "tracts": 10
+    },
+    "mi": 5.3
+  },
+  "4223640": {
+    "name": "Tredyffrin-Easttown",
+    "drive": "~16 mi (~28 min)",
+    "districtRank": "",
+    "trend": "",
+    "config": "",
+    "elementary": {
+      "score": 10,
+      "rank": "avg of 5 schools (2024 PSSA/Keystone)"
+    },
+    "middle": {
+      "score": 10,
+      "rank": "avg of 2 schools (2024 PSSA/Keystone)"
+    },
+    "high": {
+      "score": 10,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "demo": {
+      "white": 73,
+      "black": 2,
+      "asian": 18,
+      "hispanic": 3,
+      "tracts": 9
+    },
+    "mi": 15.0
+  },
+  "4222560": {
+    "name": "Spring-Ford Area",
+    "drive": "~28 min",
+    "districtRank": "Niche 2026 #10 (UNCONFIRMED; historically ~#24)",
+    "trend": "",
+    "config": "K\u20134 elem, 5\u20137 & 8\u20139 centers, 10\u201312 HS",
+    "elementary": {
+      "score": 9,
+      "rank": "avg of 7 schools (2024 PSSA/Keystone)"
+    },
+    "middle": {
+      "score": 8,
+      "rank": "avg of 3 schools (2024 PSSA/Keystone)"
+    },
+    "high": {
+      "score": 9,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "demo": {
+      "white": 82,
+      "black": 3,
+      "asian": 9,
+      "hispanic": 3,
+      "tracts": 11
+    },
+    "mi": 12.8
+  },
+  "4219050": {
+    "name": "Phoenixville Area",
+    "drive": "~15 mi (~28 min)",
+    "districtRank": "",
+    "trend": "",
+    "config": "",
+    "elementary": {
+      "score": 8,
+      "rank": "avg of 3 schools (2024 PSSA/Keystone)"
+    },
+    "middle": {
+      "score": 6,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "high": {
+      "score": 6,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "demo": {
+      "white": 84,
+      "black": 4,
+      "asian": 4,
+      "hispanic": 4,
+      "tracts": 8
+    },
+    "mi": 14.2
+  },
+  "4203960": {
+    "name": "Boyertown Area",
+    "drive": "~18 mi (~33 min)",
+    "districtRank": "",
+    "trend": "",
+    "config": "",
+    "elementary": {
+      "score": 7,
+      "rank": "avg of 6 schools (2024 PSSA/Keystone)"
+    },
+    "middle": {
+      "score": 6,
+      "rank": "avg of 2 schools (2024 PSSA/Keystone)"
+    },
+    "high": {
+      "score": 6,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "demo": {
+      "white": 92,
+      "black": 1,
+      "asian": 1,
+      "hispanic": 3,
+      "tracts": 11
+    },
+    "mi": 17.6
+  },
+  "4218990": {
+    "name": "Philadelphia City",
+    "drive": "~45 min",
+    "districtRank": "SchoolDigger #473 of 606 PA districts",
+    "trend": "Magnets (Masterman, Central) would score ~9\u201310 but are lottery/test-in.",
+    "config": "varies by catchment (magnets excluded)",
+    "elementary": {
+      "score": 2,
+      "rank": "avg of 6 schools (2024 PSSA/Keystone)"
+    },
+    "middle": {
+      "score": 2,
+      "rank": "avg of 18 schools (2024 PSSA/Keystone)"
+    },
+    "high": {
+      "score": 2,
+      "rank": "avg of 29 schools (2024 PSSA/Keystone)"
+    },
+    "demo": {
+      "white": 34,
+      "black": 39,
+      "asian": 8,
+      "hispanic": 16,
+      "tracts": 391
+    },
+    "mi": 18.6
+  },
+  "4219920": {
+    "name": "Radnor Township",
+    "drive": "~16 mi (~28 min)",
+    "districtRank": "",
+    "trend": "",
+    "config": "",
+    "elementary": {
+      "score": 10,
+      "rank": "avg of 3 schools (2024 PSSA/Keystone)"
+    },
+    "middle": {
+      "score": 10,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "high": {
+      "score": 10,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "demo": {
+      "white": 76,
+      "black": 5,
+      "asian": 9,
+      "hispanic": 6,
+      "tracts": 6
+    },
+    "mi": 15.5
+  },
+  "4211670": {
+    "name": "Haverford Township",
+    "drive": "~18 mi (~32 min)",
+    "districtRank": "",
+    "trend": "",
+    "config": "",
+    "elementary": {
+      "score": 10,
+      "rank": "avg of 5 schools (2024 PSSA/Keystone)"
+    },
+    "middle": {
+      "score": 9,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "high": {
+      "score": 9,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "demo": {
+      "white": 86,
+      "black": 3,
+      "asian": 4,
+      "hispanic": 3,
+      "tracts": 13
+    },
+    "mi": 17.6
+  },
+  "4224390": {
+    "name": "Upper Dublin",
+    "drive": "~22 min",
+    "districtRank": "Niche #15 of 494 PA districts",
+    "trend": "HS slipping: #27 PA (2024) \u2192 #39 (2025).",
+    "config": "K\u20135 elem, 6\u20138 middle, 9\u201312 HS",
+    "elementary": {
+      "score": 10,
+      "rank": "avg of 4 schools (2024 PSSA/Keystone)"
+    },
+    "middle": {
+      "score": 8,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "high": {
+      "score": 8,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "demo": {
+      "white": 80,
+      "black": 4,
+      "asian": 10,
+      "hispanic": 4,
+      "tracts": 7
+    },
+    "mi": 8.3
+  },
+  "4224510": {
+    "name": "Upper Moreland Township",
+    "drive": "~11 mi (~20 min)",
+    "districtRank": "",
+    "trend": "",
+    "config": "",
+    "elementary": {
+      "score": 8,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "middle": {
+      "score": 8,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "high": {
+      "score": 8,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "demo": {
+      "white": 82,
+      "black": 4,
+      "asian": 3,
+      "hispanic": 5,
+      "tracts": 6
+    },
+    "mi": 11.4
+  },
+  "4214760": {
+    "name": "Marple Newtown",
+    "drive": "~19 mi (~34 min)",
+    "districtRank": "",
+    "trend": "",
+    "config": "",
+    "elementary": {
+      "score": 9,
+      "rank": "avg of 4 schools (2024 PSSA/Keystone)"
+    },
+    "middle": {
+      "score": 7,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "high": {
+      "score": 6,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "demo": {
+      "white": 87,
+      "black": 1,
+      "asian": 8,
+      "hispanic": 2,
+      "tracts": 8
+    },
+    "mi": 19.4
+  },
+  "4205310": {
+    "name": "Central Bucks",
+    "drive": "~25 min",
+    "districtRank": "Niche #32 of 494 PA districts",
+    "trend": "",
+    "config": "K\u20136 elem, 7\u20139 middle, 10\u201312 HS",
+    "elementary": {
+      "score": 9,
+      "rank": "avg of 15 schools (2024 PSSA/Keystone)"
+    },
+    "middle": {
+      "score": 8,
+      "rank": "avg of 5 schools (2024 PSSA/Keystone)"
+    },
+    "high": {
+      "score": 9,
+      "rank": "avg of 3 schools (2024 PSSA/Keystone)"
+    },
+    "demo": {
+      "white": 87,
+      "black": 2,
+      "asian": 5,
+      "hispanic": 3,
+      "tracts": 26
+    },
+    "mi": 11.9
+  },
+  "4216410": {
+    "name": "Neshaminy",
+    "drive": "~20 mi (~35 min)",
+    "districtRank": "",
+    "trend": "",
+    "config": "",
+    "elementary": {
+      "score": 8,
+      "rank": "avg of 6 schools (2024 PSSA/Keystone)"
+    },
+    "middle": {
+      "score": 4,
+      "rank": "avg of 3 schools (2024 PSSA/Keystone)"
+    },
+    "high": {
+      "score": 5,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "demo": {
+      "white": 82,
+      "black": 4,
+      "asian": 4,
+      "hispanic": 5,
+      "tracts": 15
+    },
+    "mi": 19.3
+  },
+  "4217280": {
+    "name": "North Penn",
+    "drive": "0 min (work)",
+    "districtRank": "Niche #60 of 494 PA districts",
+    "trend": "",
+    "config": "K\u20136 elem (6th still elementary), 7\u20139 middle, 10\u201312 HS",
+    "elementary": {
+      "score": 8,
+      "rank": "avg of 13 schools (2024 PSSA/Keystone)"
+    },
+    "middle": {
+      "score": 6,
+      "rank": "avg of 3 schools (2024 PSSA/Keystone)"
+    },
+    "high": {
+      "score": 7,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "demo": {
+      "white": 71,
+      "black": 6,
+      "asian": 17,
+      "hispanic": 4,
+      "tracts": 25
+    },
+    "mi": 0.4
+  },
+  "4205190": {
+    "name": "Centennial",
+    "drive": "~12 mi (~21 min)",
+    "districtRank": "",
+    "trend": "",
+    "config": "",
+    "elementary": {
+      "score": 6,
+      "rank": "avg of 3 schools (2024 PSSA/Keystone)"
+    },
+    "middle": {
+      "score": 4,
+      "rank": "avg of 2 schools (2024 PSSA/Keystone)"
+    },
+    "high": {
+      "score": 3,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "demo": {
+      "white": 87,
+      "black": 3,
+      "asian": 3,
+      "hispanic": 5,
+      "tracts": 12
+    },
+    "mi": 11.8
+  },
+  "4219890": {
+    "name": "Quakertown Community",
+    "drive": "~15 mi (~27 min)",
+    "districtRank": "",
+    "trend": "",
+    "config": "",
+    "elementary": {
+      "score": 6,
+      "rank": "avg of 5 schools (2024 PSSA/Keystone)"
+    },
+    "middle": {
+      "score": 4,
+      "rank": "avg of 2 schools (2024 PSSA/Keystone)"
+    },
+    "high": {
+      "score": 5,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "demo": {
+      "white": 87,
+      "black": 2,
+      "asian": 2,
+      "hispanic": 6,
+      "tracts": 8
+    },
+    "mi": 14.5
+  },
+  "4216860": {
+    "name": "New Hope-Solebury",
+    "drive": "~17 mi (~30 min)",
+    "districtRank": "",
+    "trend": "",
+    "config": "",
+    "elementary": {
+      "score": 9,
+      "rank": "avg of 2 schools (2024 PSSA/Keystone)"
+    },
+    "middle": {
+      "score": 9,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "high": {
+      "score": 9,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "demo": {
+      "white": 86,
+      "black": 1,
+      "asian": 5,
+      "hispanic": 5,
+      "tracts": 4
+    },
+    "mi": 17.7
+  },
+  "4214250": {
+    "name": "Methacton",
+    "drive": "~22 min",
+    "districtRank": "Niche #57 of 494 PA districts",
+    "trend": "",
+    "config": "K\u20134 + 5\u20136 elem, 7\u20138 middle, 9\u201312 HS",
+    "elementary": {
+      "score": 9,
+      "rank": "avg of 5 schools (2024 PSSA/Keystone)"
+    },
+    "middle": {
+      "score": 7,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "high": {
+      "score": 7,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "demo": {
+      "white": 77,
+      "black": 5,
+      "asian": 12,
+      "hispanic": 3,
+      "tracts": 7
+    },
+    "mi": 10.0
+  },
+  "4219650": {
+    "name": "Pottsgrove",
+    "drive": "~18 mi (~32 min)",
+    "districtRank": "",
+    "trend": "",
+    "config": "",
+    "elementary": {
+      "score": 4,
+      "rank": "avg of 2 schools (2024 PSSA/Keystone)"
+    },
+    "middle": {
+      "score": 3,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "high": {
+      "score": 3,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "demo": {
+      "white": 81,
+      "black": 8,
+      "asian": 2,
+      "hispanic": 5,
+      "tracts": 6
+    },
+    "mi": 18.8
+  },
+  "4212420": {
+    "name": "Jenkintown",
+    "drive": "~13 mi (~23 min)",
+    "districtRank": "",
+    "trend": "",
+    "config": "",
+    "elementary": {
+      "score": 9,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "middle": null,
+    "high": {
+      "score": 9,
+      "rank": "avg of 1 schools (2024 PSSA/Keystone)"
+    },
+    "demo": {
+      "white": 80,
+      "black": 9,
+      "asian": 2,
+      "hispanic": 7,
+      "tracts": 1
+    },
+    "mi": 12.9
+  }
+}
