@@ -81,6 +81,7 @@
   .lst-pill { color: #fff; font: 600 11px/1 Inter, sans-serif; padding: 3px 6px; border-radius: 6px;
     border: 1.5px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,.5); white-space: nowrap; transition: transform .1s; }
   .lst-pill--hl { transform: scale(1.6); box-shadow: 0 0 0 2px #1C1E26, 0 3px 9px rgba(0,0,0,.6); }
+  .lst-pill--approx { border-style: dashed; opacity: .8; }
 
   .legend {
     background: #fffdf9; border: 1px solid #e2ddd2; border-radius: 8px;
@@ -120,13 +121,18 @@
     <button data-band="high">High School<span class="band-grades">9–12</span></button>
   </div>
   <div class="demo-ctrl">
-    <label for="demoSelect">Demographics</label>
+    <label for="demoSelect">Overlay</label>
     <select id="demoSelect">
       <option value="">None</option>
-      <option value="white">% White</option>
-      <option value="black">% Black</option>
-      <option value="asian">% Asian</option>
-      <option value="hispanic">% Hispanic</option>
+      <optgroup label="Demographics (by tract)">
+        <option value="white">% White</option>
+        <option value="black">% Black</option>
+        <option value="asian">% Asian</option>
+        <option value="hispanic">% Hispanic</option>
+      </optgroup>
+      <optgroup label="Safety (by county)">
+        <option value="crime">Violent crime rate</option>
+      </optgroup>
     </select>
   </div>
   <button id="idealBtn" class="ideal-btn">★ Ideal</button>
@@ -446,6 +452,7 @@ function listingPopup(s) {
   return `${img}<h3 style="margin-bottom:2px">${s.address}</h3>
     <span class="pop-score" style="background:${col}">${s.price}/mo</span><span class="pop-band">${s.beds} bd · ${s.baths} ba · ${s.sqft.toLocaleString()} sqft</span>
     <div class="pop-meta">${s.city}, PA${s.days != null ? ` · ${s.days} days on site` : ""}</div>
+    ${s.approx ? `<div class="pop-trend">📍 Approximate — address not disclosed; pin placed at the ${s.zip} ZIP center</div>` : ""}
     <div class="pop-rank">${distLine}</div>${bathWarn}
     <div class="pop-rank"><a href="${listingUrl(s)}" target="_blank" rel="noopener">View details ↗</a></div>`;
 }
@@ -559,9 +566,9 @@ fetch("listings.json").then(r => r.json()).then(list => {
   list.forEach(s => {
     if (s.lat == null) return;
     const col = BUDGET_COLOR[s.budget] || "#334155";
-    const priceK = "$" + (Math.round(s.priceNum / 100) / 10).toFixed(1) + "k";
+    const priceK = (s.approx ? "~$" : "$") + (Math.round(s.priceNum / 100) / 10).toFixed(1) + "k";
     const icon = L.divIcon({ className:"",
-      html:`<div class="lst-pill" style="background:${col}">${priceK}</div>`,
+      html:`<div class="lst-pill${s.approx ? " lst-pill--approx" : ""}" style="background:${col}">${priceK}</div>`,
       iconSize:[44,18], iconAnchor:[22,9] });
     const marker = L.marker([s.lat, s.lng], { icon, zIndexOffset:2000 })
       .bindPopup(() => listingPopup(s), { maxWidth:260 })
@@ -626,12 +633,31 @@ legend.addTo(map);
 
 // ── Demographic overlay (race/ethnicity by Census tract, ACS via CDC SVI 2022) ──
 let tractGeo = null, tractLayer = null, demoMetric = "", demoLegendCtrl = null;
-const DEMO_LABEL = { white:"% White", black:"% Black", asian:"% Asian", hispanic:"% Hispanic" };
+const DEMO_LABEL = { white:"% White", black:"% Black", asian:"% Asian", hispanic:"% Hispanic", crime:"Violent crime rate" };
 const DEMO_BREAKS = [[75,"#4a1486"],[50,"#6a51a3"],[30,"#807dba"],[15,"#9e9ac8"],[5,"#cbc9e2"],[0,"#f2f0f7"]];
 function rampColor(p) {
   if (p == null) return "#e9e9e9";
   for (const [thr, col] of DEMO_BREAKS) if (p >= thr) return col;
   return "#f2f0f7";
+}
+
+// Violent crime, FBI-derived rate per 1,000 residents (CrimeGrade.org, 2025), keyed
+// by county FIPS. Crime is reported by county, so every tract in a county shares its
+// rate — the overlay effectively shades the map by county.
+const CRIME_BY_FIPS = {
+  "42029": { county:"Chester",      rate:1.533, grade:"A+" },
+  "42017": { county:"Bucks",        rate:1.719, grade:"A+" },
+  "42091": { county:"Montgomery",   rate:1.868, grade:"A+" },
+  "42011": { county:"Berks",        rate:2.313, grade:"A"  },
+  "42045": { county:"Delaware",     rate:2.815, grade:"B+" },
+  "42101": { county:"Philadelphia", rate:4.124, grade:"C"  },
+};
+const CRIME_BREAKS = [[3.5,"#d73027"],[2.5,"#fc8d59"],[1.8,"#fee08b"],[0,"#1a9850"]];
+function crimeColor(fips) {
+  const c = CRIME_BY_FIPS[fips];
+  if (!c) return "#e9e9e9";
+  for (const [thr, col] of CRIME_BREAKS) if (c.rate >= thr) return col;
+  return "#1a9850";
 }
 function demoRow(k, pr) {
   const lbl = { white:"White", black:"Black", asian:"Asian", hispanic:"Hispanic" }[k];
@@ -644,10 +670,17 @@ function updateDemoLegend() {
   demoLegendCtrl = L.control({ position:"topright" });
   demoLegendCtrl.onAdd = () => {
     const d = L.DomUtil.create("div", "legend");
-    d.innerHTML = `<h4>${DEMO_LABEL[demoMetric]} · by tract</h4>` +
-      [["75–100%","#4a1486"],["50–75%","#6a51a3"],["30–50%","#807dba"],["15–30%","#9e9ac8"],["5–15%","#cbc9e2"],["0–5%","#f2f0f7"]]
-        .map(([t,c]) => `<div class="row"><span class="swatch" style="background:${c}"></span> ${t}</div>`).join("") +
-      `<div class="note">ACS 2018–22 (CDC SVI). Census tracts, not districts. "White" = non-Hispanic.</div>`;
+    if (demoMetric === "crime") {
+      d.innerHTML = `<h4>${DEMO_LABEL.crime} · by county</h4>` +
+        [["3.5+ /1k","#d73027"],["2.5–3.5","#fc8d59"],["1.8–2.5","#fee08b"],["under 1.8","#1a9850"]]
+          .map(([t,c]) => `<div class="row"><span class="swatch" style="background:${c}"></span> ${t}</div>`).join("") +
+        `<div class="note">Violent crimes per 1,000 residents/yr, by county (FBI-derived, CrimeGrade 2025). Whole-county figure — not block-level.</div>`;
+    } else {
+      d.innerHTML = `<h4>${DEMO_LABEL[demoMetric]} · by tract</h4>` +
+        [["75–100%","#4a1486"],["50–75%","#6a51a3"],["30–50%","#807dba"],["15–30%","#9e9ac8"],["5–15%","#cbc9e2"],["0–5%","#f2f0f7"]]
+          .map(([t,c]) => `<div class="row"><span class="swatch" style="background:${c}"></span> ${t}</div>`).join("") +
+        `<div class="note">ACS 2018–22 (CDC SVI). Census tracts, not districts. "White" = non-Hispanic.</div>`;
+    }
     return d;
   };
   demoLegendCtrl.addTo(map);
@@ -659,15 +692,27 @@ function setDemo(metric) {
   entries.forEach(({ label }) => label.setOpacity(metric ? 0 : 1));   // hide district numbers under the overlay
   updateDemoLegend();
   if (!metric || !tractGeo) return;
+  const isCrime = metric === "crime";
   tractLayer = L.geoJSON(tractGeo, {
-    style: f => ({ fillColor: rampColor(f.properties[demoMetric]), fillOpacity:0.75, color:"#ffffff", weight:0.3 }),
+    style: f => ({
+      fillColor: isCrime ? crimeColor(f.properties.GEOID.slice(0,5)) : rampColor(f.properties[demoMetric]),
+      fillOpacity:0.75, color:"#ffffff", weight:0.3 }),
     onEachFeature: (f, lyr) => {
       const pr = f.properties;
-      lyr.bindPopup(
-        `<h3 style="margin-bottom:2px">Census tract</h3>
-         <div class="pop-meta">${pr.totpop != null ? Number(pr.totpop).toLocaleString() + " residents" : ""}</div>
-         <div class="pop-rank">${demoRow("white",pr)}${demoRow("black",pr)}${demoRow("asian",pr)}${demoRow("hispanic",pr)}</div>`,
-        { maxWidth:200 });
+      if (isCrime) {
+        const c = CRIME_BY_FIPS[pr.GEOID.slice(0,5)];
+        lyr.bindPopup(
+          `<h3 style="margin-bottom:2px">${c ? c.county + " County" : "County"}</h3>
+           <div class="pop-rank">Violent crime: <b>${c ? c.rate : "—"}</b> per 1,000/yr${c ? ` · grade <b>${c.grade}</b>` : ""}</div>
+           <div class="pop-meta" style="font-style:italic">County-level (FBI-derived, CrimeGrade 2025)</div>`,
+          { maxWidth:220 });
+      } else {
+        lyr.bindPopup(
+          `<h3 style="margin-bottom:2px">Census tract</h3>
+           <div class="pop-meta">${pr.totpop != null ? Number(pr.totpop).toLocaleString() + " residents" : ""}</div>
+           <div class="pop-rank">${demoRow("white",pr)}${demoRow("black",pr)}${demoRow("asian",pr)}${demoRow("hispanic",pr)}</div>`,
+          { maxWidth:200 });
+      }
     }
   }).addTo(map);
 }
