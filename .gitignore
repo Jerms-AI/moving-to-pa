@@ -21,3 +21,6 @@ email*.html
 # Python
 __pycache__/
 *.pyc
+
+# PA assessment source spreadsheets (large, local)
+.assessment_src/

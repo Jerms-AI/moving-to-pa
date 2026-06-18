@@ -46,14 +46,16 @@ exactly which district (and school catchment) any prospective rental falls in.
 
 - **Boundaries** — US Census TIGER (districts + tracts) and **NCES SABS 2015-16** (attendance zones).
 - **School locations** — NCES EDGE geocode file.
-- **School/district scores** — PA state proficiency (2018 EDFacts) via the Urban Institute
-  Education Data API, ranked across PA schools → 1–10.
+- **School/district scores** — PA state proficiency (2024 PSSA grades 3–8 + Keystone grade 11,
+  % proficient/advanced) from PA PDE school-level files, ranked across ~2,700 PA schools → 1–10.
+  Built by `score_schools.py`.
 - **Demographics** — CDC SVI 2022 (Census ACS 2018-22), aggregated tracts → districts.
 - **Listing locations** — US Census geocoder (+ Nominatim fallback), tagged to districts by
   point-in-polygon.
 
-Honest caveats: proficiency is 2018, attendance zones are 2015-16, district demographics are
-tract-aggregated (approximate at edges).
+Honest caveats: proficiency is 2024 (raw % proficient, not a growth/equity composite like
+GreatSchools/Zillow — so scores can differ from those), attendance zones are 2015-16, district
+demographics are tract-aggregated (approximate at edges).
 
 ## Listings workflow
 
