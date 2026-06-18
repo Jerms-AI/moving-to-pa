@@ -581,9 +581,35 @@ function buildDistrictCards() {
 // persist across reloads. Keyed by address+zip.
 function noteKey(s) { return "mp:" + (s.address + "|" + s.zip).toLowerCase().replace(/[^a-z0-9]+/g, "_"); }
 const getRate = k => +(localStorage.getItem(k + ":rate") || 0);
-const setRate = (k, v) => v ? localStorage.setItem(k + ":rate", v) : localStorage.removeItem(k + ":rate");
+const setRate = (k, v) => { v ? localStorage.setItem(k + ":rate", v) : localStorage.removeItem(k + ":rate"); scheduleSync(); };
 const getNote = k => localStorage.getItem(k + ":note") || "";
-const setNote = (k, v) => v ? localStorage.setItem(k + ":note", v) : localStorage.removeItem(k + ":note");
+const setNote = (k, v) => { v ? localStorage.setItem(k + ":note", v) : localStorage.removeItem(k + ":note"); scheduleSync(); };
+
+// Durable storage: localStorage is the live store, but we also persist it to
+// notes.json on disk via the dev server (serve.py) so notes survive a cache
+// clear. If the /api/notes endpoint isn't there (plain static host), this all
+// no-ops and localStorage alone is used.
+function allNotes() {
+  const data = {};
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (k.startsWith("mp:")) data[k] = localStorage.getItem(k);
+  }
+  return data;
+}
+let _syncTimer = null;
+function scheduleSync() {
+  clearTimeout(_syncTimer);
+  _syncTimer = setTimeout(() => {
+    fetch("api/notes", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(allNotes()) }).catch(() => {});
+  }, 400);
+}
+// On load, pull the on-disk notes into localStorage, then refresh the sidebar.
+fetch("api/notes").then(r => r.ok ? r.json() : null).then(d => {
+  if (!d) return;
+  Object.entries(d).forEach(([k, v]) => { if (k.startsWith("mp:")) localStorage.setItem(k, v); });
+  if (listingItems) buildSidebar(listingItems);
+}).catch(() => {});
 
 // Export/import all notes+ratings as a JSON file, so they survive across browsers,
 // devices, and the eventual move off localStorage.
@@ -606,6 +632,7 @@ function importNotes(file) {
       const data = JSON.parse(r.result);
       let n = 0;
       Object.entries(data).forEach(([k, v]) => { if (k.startsWith("mp:")) { localStorage.setItem(k, v); n++; } });
+      scheduleSync();
       if (listingItems) buildSidebar(listingItems);
       alert(`Imported ${n} saved note/rating entries.`);
     } catch (e) { alert("Couldn't read that notes file: " + e.message); }
