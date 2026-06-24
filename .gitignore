@@ -27,3 +27,15 @@ __pycache__/
 
 # Personal listing notes (local, written by serve.py)
 notes.json
+
+# RealScout sync — credentials, saved session, scratch dumps (all local/personal)
+.realscout_creds.json
+.realscout_state.json
+realscout_raw.json
+realscout_api.json
+realscout_dump.html
+realscout_dump*.png
+realscout_sync.log
+
+# Phone-access helper (local Windows port-forward script)
+_phone_setup.cmd

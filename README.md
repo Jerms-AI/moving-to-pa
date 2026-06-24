@@ -64,13 +64,40 @@ into this folder; the listings are parsed from the email HTML by code (price, be
 address, photo, View Details link, days-on-site), deduped by address across emails, geocoded, and
 written to `listings.json`. **Do not hand-transcribe** — parse the file. Email files are gitignored.
 
+### RealScout auto-sync (favorites)
+
+Instead of waiting on emails, the app pulls your RealScout matches directly. RealScout uses
+**passwordless ("magic link") auth**, so `.realscout_creds.json` (gitignored) holds a one-click
+login link from any RealScout alert email plus the matches URL:
+
+```json
+{ "bootstrapUrl": "https://email.alerts2.realscout.com/c/…", "matchesUrl": "https://tabithaheit.realscout.com/homesearch/matches" }
+```
+
+- `scrape_realscout.mjs` — headless (Node + the `Work/dashboard` Playwright) follows the link,
+  reads the `graphql-homebuyer` `searcher.listings` payload (each item already has lat/lng, price,
+  beds/baths, thumbnail, slug, and `verdict.prose` = favorited), and writes `realscout_raw.json`.
+  Saves the session to `.realscout_state.json` to reuse between runs.
+- `ingest_realscout.py` — merges that into `listings.json` reusing `parse_emails.py`'s
+  district-tagging + dedup (uses RealScout's lat/lng directly, geocodes only undisclosed addresses).
+- `sync_realscout.sh` — runs both; logs to `realscout_sync.log`.
+- **`serve.py` runs the sync automatically** on startup + every 6h, and exposes `POST /api/refresh`.
+
+Favorited homes get a "♥ Saved on RealScout" badge. When the magic link finally expires, paste a
+fresh one from any RealScout email into `.realscout_creds.json`. **On a new machine** you'll need a
+fresh `bootstrapUrl` (the creds/session files are gitignored and don't travel with the repo).
+Zillow has no equivalent auto-sync (aggressive bot defense); use the in-app "paste a Zillow link"
+box for those.
+
 ## Files
 
 - `index.html` — the whole app (Leaflet via CDN, no build step).
 - `districts.geojson`, `districts_scores.json` — boundaries + per-band scores, distance, demographics.
 - `schools.json`, `school_boundaries.geojson` — school dots + attendance zones.
 - `tracts.geojson` — demographic choropleth.
-- `listings.json` — apartments.
+- `listings.json` — apartments (from email parsing + RealScout sync).
+- `parse_emails.py` — `.eml` → `listings.json`. `scrape_realscout.mjs` + `ingest_realscout.py` +
+  `sync_realscout.sh` — RealScout auto-sync. `serve.py` — dev server + notes API + sync scheduler.
 
 ## Dev
 
