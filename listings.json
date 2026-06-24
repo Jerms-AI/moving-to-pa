@@ -16,7 +16,8 @@
     "budget": "under",
     "bathOK": true,
     "geoid": "4205760",
-    "district": "Cheltenham"
+    "district": "Cheltenham",
+    "firstSeen": "2026-05-22"
   },
   {
     "address": "615 PIEDMONT CT",
@@ -35,7 +36,8 @@
     "budget": "under",
     "bathOK": false,
     "geoid": "4217280",
-    "district": "North Penn"
+    "district": "North Penn",
+    "firstSeen": "2026-06-14"
   },
   {
     "address": "423 CANNON CT #423",
@@ -54,7 +56,8 @@
     "budget": "under",
     "bathOK": true,
     "geoid": "4223640",
-    "district": "Tredyffrin-Easttown"
+    "district": "Tredyffrin-Easttown",
+    "firstSeen": "2026-06-21"
   },
   {
     "address": "30 KEYSTONE AVE",
@@ -73,7 +76,8 @@
     "budget": "under",
     "bathOK": false,
     "geoid": "4223640",
-    "district": "Tredyffrin-Easttown"
+    "district": "Tredyffrin-Easttown",
+    "firstSeen": "2026-06-21"
   },
   {
     "address": "854 GRAPHITE DR",
@@ -94,7 +98,8 @@
     "budget": "under",
     "bathOK": true,
     "geoid": "4219050",
-    "district": "Phoenixville Area"
+    "district": "Phoenixville Area",
+    "firstSeen": "2026-06-24"
   },
   {
     "address": "1002 WINDSOR AVE",
@@ -113,7 +118,8 @@
     "budget": "under",
     "bathOK": true,
     "geoid": "4224390",
-    "district": "Upper Dublin"
+    "district": "Upper Dublin",
+    "firstSeen": "2026-05-28"
   },
   {
     "address": "321 SAGE LN",
@@ -134,7 +140,8 @@
     "budget": "under",
     "bathOK": true,
     "geoid": "4218990",
-    "district": "Philadelphia City"
+    "district": "Philadelphia City",
+    "firstSeen": "2026-06-24"
   },
   {
     "address": "22 N CANNON AVE",
@@ -155,7 +162,8 @@
     "budget": "under",
     "bathOK": true,
     "geoid": "4217280",
-    "district": "North Penn"
+    "district": "North Penn",
+    "firstSeen": "2026-06-24"
   },
   {
     "address": "606 COATES LN #",
@@ -174,7 +182,8 @@
     "budget": "under",
     "bathOK": true,
     "geoid": "4224480",
-    "district": "Upper Merion Area"
+    "district": "Upper Merion Area",
+    "firstSeen": "2026-05-17"
   },
   {
     "address": "Address Not Disclosed",
@@ -196,7 +205,8 @@
     "bathOK": true,
     "approx": true,
     "geoid": "4217280",
-    "district": "North Penn"
+    "district": "North Penn",
+    "firstSeen": "2026-06-24"
   },
   {
     "address": "524 CONTINENTAL RD",
@@ -215,7 +225,8 @@
     "budget": "ceiling",
     "bathOK": true,
     "geoid": "4211610",
-    "district": "Hatboro-Horsham"
+    "district": "Hatboro-Horsham",
+    "firstSeen": "2026-05-30"
   },
   {
     "address": "23 KNOX AVE",
@@ -234,7 +245,8 @@
     "budget": "ceiling",
     "bathOK": true,
     "geoid": "4223640",
-    "district": "Tredyffrin-Easttown"
+    "district": "Tredyffrin-Easttown",
+    "firstSeen": "2026-06-20"
   },
   {
     "address": "371 OXER CT",
@@ -253,7 +265,8 @@
     "budget": "ceiling",
     "bathOK": true,
     "geoid": "4223640",
-    "district": "Tredyffrin-Easttown"
+    "district": "Tredyffrin-Easttown",
+    "firstSeen": "2026-06-11"
   },
   {
     "address": "42 GRANDVIEW DR #",
@@ -272,7 +285,8 @@
     "budget": "ceiling",
     "bathOK": true,
     "geoid": "4221870",
-    "district": "Souderton Area"
+    "district": "Souderton Area",
+    "firstSeen": "2026-06-20"
   },
   {
     "address": "109 ALMOND DR",
@@ -293,7 +307,8 @@
     "budget": "ceiling",
     "bathOK": true,
     "geoid": "4217280",
-    "district": "North Penn"
+    "district": "North Penn",
+    "firstSeen": "2026-06-24"
   },
   {
     "address": "235 COMPASS DR",
@@ -314,7 +329,8 @@
     "budget": "ceiling",
     "bathOK": true,
     "geoid": "4217280",
-    "district": "North Penn"
+    "district": "North Penn",
+    "firstSeen": "2026-06-24"
   },
   {
     "address": "803 MILL RD",
@@ -333,7 +349,8 @@
     "budget": "ceiling",
     "bathOK": true,
     "geoid": "4214160",
-    "district": "Lower Merion"
+    "district": "Lower Merion",
+    "firstSeen": "2026-05-24"
   },
   {
     "address": "447 FORT HILL CIR",
@@ -354,7 +371,8 @@
     "budget": "ceiling",
     "bathOK": true,
     "geoid": "4219470",
-    "district": "Colonial"
+    "district": "Colonial",
+    "firstSeen": "2026-06-24"
   },
   {
     "address": "825 PECAN RD",
@@ -375,7 +393,8 @@
     "budget": "ceiling",
     "bathOK": true,
     "geoid": "4222560",
-    "district": "Spring-Ford Area"
+    "district": "Spring-Ford Area",
+    "firstSeen": "2026-06-24"
   },
   {
     "address": "125 DRAGON DR",
@@ -396,7 +415,8 @@
     "budget": "ceiling",
     "bathOK": true,
     "geoid": "4217280",
-    "district": "North Penn"
+    "district": "North Penn",
+    "firstSeen": "2026-06-24"
   },
   {
     "address": "905 SUSAN CIR",
@@ -417,7 +437,8 @@
     "budget": "ceiling",
     "bathOK": true,
     "geoid": "4217280",
-    "district": "North Penn"
+    "district": "North Penn",
+    "firstSeen": "2026-06-24"
   },
   {
     "address": "130 ROCKLAND AVE",
@@ -436,7 +457,8 @@
     "budget": "ceiling",
     "bathOK": true,
     "geoid": "4214160",
-    "district": "Lower Merion"
+    "district": "Lower Merion",
+    "firstSeen": "2026-06-21"
   },
   {
     "address": "804 BISMARK WAY",
@@ -455,7 +477,8 @@
     "budget": "ceiling",
     "bathOK": true,
     "geoid": "4224480",
-    "district": "Upper Merion Area"
+    "district": "Upper Merion Area",
+    "firstSeen": "2026-06-07"
   },
   {
     "address": "505 APPLE ST",
@@ -474,7 +497,8 @@
     "budget": "ceiling",
     "bathOK": true,
     "geoid": "4224480",
-    "district": "Upper Merion Area"
+    "district": "Upper Merion Area",
+    "firstSeen": "2026-06-06"
   },
   {
     "address": "228 COMPASS DR",
@@ -493,7 +517,8 @@
     "budget": "ceiling",
     "bathOK": true,
     "geoid": "4217280",
-    "district": "North Penn"
+    "district": "North Penn",
+    "firstSeen": "2026-06-03"
   },
   {
     "address": "3845 JACOB STOUT RD #13",
@@ -514,7 +539,8 @@
     "budget": "ceiling",
     "bathOK": true,
     "geoid": "4205310",
-    "district": "Central Bucks"
+    "district": "Central Bucks",
+    "firstSeen": "2026-06-24"
   },
   {
     "address": "219 BRONZE ST",
@@ -535,7 +561,8 @@
     "budget": "ceiling",
     "bathOK": true,
     "geoid": "4219050",
-    "district": "Phoenixville Area"
+    "district": "Phoenixville Area",
+    "firstSeen": "2026-06-24"
   },
   {
     "address": "344 BRIGADE CT #344",
@@ -554,7 +581,8 @@
     "budget": "ceiling",
     "bathOK": true,
     "geoid": "4223640",
-    "district": "Tredyffrin-Easttown"
+    "district": "Tredyffrin-Easttown",
+    "firstSeen": "2026-06-12"
   },
   {
     "address": "320 WALNUT ST",
@@ -575,7 +603,8 @@
     "budget": "ceiling",
     "bathOK": true,
     "geoid": "4218930",
-    "district": "Perkiomen Valley"
+    "district": "Perkiomen Valley",
+    "firstSeen": "2026-06-24"
   },
   {
     "address": "438 CANDLEWOOD WAY",
@@ -596,7 +625,8 @@
     "budget": "ceiling",
     "bathOK": true,
     "geoid": "4217280",
-    "district": "North Penn"
+    "district": "North Penn",
+    "firstSeen": "2026-06-24"
   },
   {
     "address": "800 BEACON CT",
@@ -615,7 +645,8 @@
     "budget": "ceiling",
     "bathOK": true,
     "geoid": "4217280",
-    "district": "North Penn"
+    "district": "North Penn",
+    "firstSeen": "2026-06-21"
   },
   {
     "address": "644 MEETINGHOUSE RD",
@@ -634,7 +665,8 @@
     "budget": "ceiling",
     "bathOK": true,
     "geoid": "4205760",
-    "district": "Cheltenham"
+    "district": "Cheltenham",
+    "firstSeen": "2026-05-11"
   },
   {
     "address": "512 DARTMOUTH DR",
@@ -653,7 +685,8 @@
     "budget": "ceiling",
     "bathOK": true,
     "geoid": "4224480",
-    "district": "Upper Merion Area"
+    "district": "Upper Merion Area",
+    "firstSeen": "2026-03-22"
   },
   {
     "address": "15 CHARTER OAK CT",
@@ -674,7 +707,8 @@
     "budget": "ceiling",
     "bathOK": true,
     "geoid": "4205310",
-    "district": "Central Bucks"
+    "district": "Central Bucks",
+    "firstSeen": "2026-06-24"
   },
   {
     "address": "727 PEONY LN",
@@ -695,7 +729,8 @@
     "budget": "ceiling",
     "bathOK": true,
     "geoid": "4222560",
-    "district": "Spring-Ford Area"
+    "district": "Spring-Ford Area",
+    "firstSeen": "2026-06-24"
   },
   {
     "address": "515 ELLISON DR",
@@ -714,7 +749,8 @@
     "budget": "ceiling",
     "bathOK": true,
     "geoid": "4217280",
-    "district": "North Penn"
+    "district": "North Penn",
+    "firstSeen": "2026-06-24"
   },
   {
     "address": "114 PINECREST LN",
@@ -733,7 +769,8 @@
     "budget": "ceiling",
     "bathOK": true,
     "geoid": "4224480",
-    "district": "Upper Merion Area"
+    "district": "Upper Merion Area",
+    "firstSeen": "2026-06-19"
   },
   {
     "address": "105 LARRABEE WAY",
@@ -754,7 +791,8 @@
     "budget": "ceiling",
     "bathOK": true,
     "geoid": "4222560",
-    "district": "Spring-Ford Area"
+    "district": "Spring-Ford Area",
+    "firstSeen": "2026-06-24"
   },
   {
     "address": "9 STOCKTON LN",
@@ -773,7 +811,8 @@
     "budget": "ceiling",
     "bathOK": true,
     "geoid": "4211610",
-    "district": "Hatboro-Horsham"
+    "district": "Hatboro-Horsham",
+    "firstSeen": "2026-03-18"
   },
   {
     "address": "77 BUNKER HILL CT #77",
@@ -792,7 +831,8 @@
     "budget": "ceiling",
     "bathOK": true,
     "geoid": "4223640",
-    "district": "Tredyffrin-Easttown"
+    "district": "Tredyffrin-Easttown",
+    "firstSeen": "2026-06-10"
   },
   {
     "address": "28 KNOX CT",
@@ -811,7 +851,8 @@
     "budget": "ceiling",
     "bathOK": true,
     "geoid": "4223640",
-    "district": "Tredyffrin-Easttown"
+    "district": "Tredyffrin-Easttown",
+    "firstSeen": "2026-06-03"
   },
   {
     "address": "229 CADENCE CT",
@@ -832,7 +873,8 @@
     "budget": "ceiling",
     "bathOK": true,
     "geoid": "4214250",
-    "district": "Methacton"
+    "district": "Methacton",
+    "firstSeen": "2026-06-24"
   },
   {
     "address": "229 WYNSTONE CT",
@@ -851,7 +893,8 @@
     "budget": "ceiling",
     "bathOK": true,
     "geoid": "4217280",
-    "district": "North Penn"
+    "district": "North Penn",
+    "firstSeen": "2026-06-05"
   },
   {
     "address": "165 RACE ST",
@@ -870,7 +913,8 @@
     "budget": "ceiling",
     "bathOK": false,
     "geoid": "4202400",
-    "district": "Wissahickon"
+    "district": "Wissahickon",
+    "firstSeen": "2026-06-24"
   },
   {
     "address": "208 CASTLE DR",
@@ -889,7 +933,8 @@
     "budget": "ceiling",
     "bathOK": true,
     "geoid": "4217280",
-    "district": "North Penn"
+    "district": "North Penn",
+    "firstSeen": "2026-06-09"
   },
   {
     "address": "402 ELLIGER AVE",
@@ -908,7 +953,8 @@
     "budget": "ceiling",
     "bathOK": false,
     "geoid": "4224390",
-    "district": "Upper Dublin"
+    "district": "Upper Dublin",
+    "firstSeen": "2026-06-02"
   },
   {
     "address": "79 MILITIA HILL",
@@ -927,7 +973,8 @@
     "budget": "ceiling",
     "bathOK": true,
     "geoid": "4223640",
-    "district": "Tredyffrin-Easttown"
+    "district": "Tredyffrin-Easttown",
+    "firstSeen": "2026-05-31"
   },
   {
     "address": "322 FLINTROCK CT",
@@ -947,7 +994,8 @@
     "bathOK": true,
     "approx": true,
     "geoid": "4218930",
-    "district": "Perkiomen Valley"
+    "district": "Perkiomen Valley",
+    "firstSeen": "2026-05-29"
   },
   {
     "address": "222 ROCK GLEN RD",
@@ -966,7 +1014,8 @@
     "budget": "ceiling",
     "bathOK": false,
     "geoid": "4214160",
-    "district": "Lower Merion"
+    "district": "Lower Merion",
+    "firstSeen": "2026-06-09"
   },
   {
     "address": "757 WHITETAIL CIR",
@@ -985,7 +1034,8 @@
     "budget": "ceiling",
     "bathOK": true,
     "geoid": "4224480",
-    "district": "Upper Merion Area"
+    "district": "Upper Merion Area",
+    "firstSeen": "2026-05-22"
   },
   {
     "address": "1039 REES AVE",
@@ -1004,7 +1054,8 @@
     "budget": "over",
     "bathOK": false,
     "geoid": "4214160",
-    "district": "Lower Merion"
+    "district": "Lower Merion",
+    "firstSeen": "2026-06-12"
   },
   {
     "address": "316 LOCUST AVE",
@@ -1023,7 +1074,8 @@
     "budget": "over",
     "bathOK": true,
     "geoid": "4214160",
-    "district": "Lower Merion"
+    "district": "Lower Merion",
+    "firstSeen": "2026-06-10"
   },
   {
     "address": "646 GREEN BRIAR RD",
@@ -1042,7 +1094,8 @@
     "budget": "over",
     "bathOK": true,
     "geoid": "4205760",
-    "district": "Cheltenham"
+    "district": "Cheltenham",
+    "firstSeen": "2026-05-24"
   },
   {
     "address": "67 TOWNVIEW DR",
@@ -1061,7 +1114,8 @@
     "budget": "over",
     "bathOK": true,
     "geoid": "4205310",
-    "district": "Central Bucks"
+    "district": "Central Bucks",
+    "firstSeen": "2026-06-17"
   },
   {
     "address": "207 VALLEY FORGE LOOKOUT PL",
@@ -1080,6 +1134,7 @@
     "budget": "over",
     "bathOK": true,
     "geoid": "4224480",
-    "district": "Upper Merion Area"
+    "district": "Upper Merion Area",
+    "firstSeen": "2026-05-21"
   }
 ]

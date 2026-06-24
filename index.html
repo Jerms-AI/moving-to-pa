@@ -103,6 +103,11 @@
     border: 1px solid #d8d2c5; border-radius: 7px; background: #fffdf9; color: var(--ink); cursor: pointer; flex: 1; }
   .group-head { padding: 11px 12px 4px; font-size: 11px; font-weight: 700; text-transform: uppercase;
     letter-spacing: .04em; color: var(--muted); }
+  .src-seg { display: flex; margin-top: 8px; border: 1px solid #d8d2c5; border-radius: 7px; overflow: hidden; }
+  .src-seg button { flex: 1; font: inherit; font-size: 12px; font-weight: 500; border: none; cursor: pointer;
+    padding: 6px 6px; background: #fffdf9; color: var(--muted); border-left: 1px solid #e2ddd2; }
+  .src-seg button:first-child { border-left: none; }
+  .src-seg button.active { background: var(--accent); color: #fff; }
   .add-row { display: flex; gap: 6px; margin-bottom: 8px; }
   .add-row input { flex: 1; min-width: 0; font: inherit; font-size: 12.5px; padding: 6px 9px;
     border: 1px solid #d8d2c5; border-radius: 7px; background: #fffdf9; color: var(--ink); }
@@ -513,9 +518,12 @@ function applySchoolLevelFilter() {
 }
 function applyListingFilter() {
   if (!listingItems) return;
-  // Apartments always stay on the map — including in Ideal mode.
-  listingItems.forEach(({ marker }) => {
-    if (!listingsLayer.hasLayer(marker)) listingsLayer.addLayer(marker);
+  // Listings stay on the map (incl. Ideal mode), gated only by the source filter
+  // (Both / Scout / Zillow).
+  listingItems.forEach(({ s, marker }) => {
+    const want = passesSource(s);
+    if (want && !listingsLayer.hasLayer(marker)) listingsLayer.addLayer(marker);
+    else if (!want && listingsLayer.hasLayer(marker)) listingsLayer.removeLayer(marker);
   });
 }
 
@@ -691,6 +699,11 @@ fetch("api/notes").then(r => r.ok ? r.json() : null).then(d => {
 
 // ── Listings sidebar: an "Organize by" control + grouped/sorted cards ──
 let sortMode = "county";
+// Source filter: "both" | "scout" (RealScout email + scraped) | "zillow" (added by you).
+let sourceFilter = "both";
+function passesSource(s) {
+  return sourceFilter === "both" ? true : sourceFilter === "zillow" ? !!s.added : !s.added;
+}
 
 // County lookup by point-in-polygon (tracts carry county FIPS in GEOID[:5]).
 const COUNTY_NAME = { "42011":"Berks", "42017":"Bucks", "42029":"Chester",
@@ -782,6 +795,11 @@ function makeCard(s, marker) {
 // Group + sort the listings for the current "Organize by" mode.
 function listingGroups(items) {
   const byPrice = (a, b) => a.s.priceNum - b.s.priceNum;
+  if (sortMode === "recent") {
+    // Newest first by when it entered our data (firstSeen, ISO date sorts lexically).
+    const byRecent = (a, b) => (b.s.firstSeen || "").localeCompare(a.s.firstSeen || "") || byPrice(a, b);
+    return [{ label: "", items: items.slice().sort(byRecent) }];
+  }
   if (sortMode === "rating") {
     const buckets = [3, 2, 1, 0].map(r => ({ label: r ? "★".repeat(r) : "Unrated", items: [] }));
     items.forEach(it => buckets[3 - getRate(noteKey(it.s))].items.push(it));
@@ -803,7 +821,7 @@ function renderListings() {
   const list = document.getElementById("listingList");
   if (!list || !listingItems) return;
   list.innerHTML = "";
-  listingGroups(listingItems).forEach(g => {
+  listingGroups(listingItems.filter(it => passesSource(it.s))).forEach(g => {
     if (g.label) {
       const h = document.createElement("div");
       h.className = "group-head";
@@ -825,15 +843,31 @@ function buildSidebar() {
        <label class="sort-ctrl">Organize by
          <select id="sortSelect" aria-label="Organize listings by">
            <option value="county">County</option>
+           <option value="recent">Recently added</option>
            <option value="rating">Star rating</option>
          </select>
        </label>
+       <div class="src-seg" id="srcSeg" role="group" aria-label="Filter by source">
+         <button type="button" data-src="both">Both</button>
+         <button type="button" data-src="scout">Scout</button>
+         <button type="button" data-src="zillow">Zillow</button>
+       </div>
      </div>
      <div id="addStatus" class="add-status" hidden></div>
      <div id="listingList"></div>`;
   const selEl = wrap.querySelector("#sortSelect");
   selEl.value = sortMode;
   selEl.addEventListener("change", () => { sortMode = selEl.value; renderListings(); });
+  const seg = wrap.querySelector("#srcSeg");
+  seg.querySelectorAll("button").forEach(b => b.classList.toggle("active", b.dataset.src === sourceFilter));
+  seg.addEventListener("click", e => {
+    const btn = e.target.closest("button");
+    if (!btn) return;
+    sourceFilter = btn.dataset.src;
+    seg.querySelectorAll("button").forEach(b => b.classList.toggle("active", b.dataset.src === sourceFilter));
+    applyListingFilter();   // map pins
+    renderListings();       // sidebar cards
+  });
   const addInput = wrap.querySelector("#addInput");
   wrap.querySelector("#addBtn").addEventListener("click", addFromInput);
   addInput.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); addFromInput(); } });
@@ -909,6 +943,7 @@ function addListingItem(s, persist) {
     countyName: s.countyName || (s.county ? (COUNTY_NAME[s.county] || "Other") : "Unknown") };
   listingItems.push(item);
   if (persist) { const arr = loadAdded(); arr.push(s); saveAdded(arr); }
+  if (!passesSource(s) && listingsLayer.hasLayer(item.marker)) listingsLayer.removeLayer(item.marker);
   renderListings();
   return item;
 }
