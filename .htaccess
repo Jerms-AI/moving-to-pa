@@ -1,0 +1,10 @@
+# Always revalidate the app shell + listing data so deploys show up immediately.
+# Large static map data (geojson) stays cacheable for speed.
+<IfModule mod_headers.c>
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-cache, must-revalidate, max-age=0"
+  </FilesMatch>
+  <FilesMatch "(listings|notes_data)\.json$">
+    Header set Cache-Control "no-cache, must-revalidate, max-age=0"
+  </FilesMatch>
+</IfModule>

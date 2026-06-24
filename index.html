@@ -108,6 +108,9 @@
     padding: 6px 6px; background: #fffdf9; color: var(--muted); border-left: 1px solid #e2ddd2; }
   .src-seg button:first-child { border-left: none; }
   .src-seg button.active { background: var(--accent); color: #fff; }
+  /* "Seen" = has a note → dim it; hover restores full clarity. */
+  .lcard.lcard-seen { opacity: .58; filter: grayscale(.35); }
+  .lcard.lcard-seen:hover { opacity: 1; filter: none; }
   .add-row { display: flex; gap: 6px; margin-bottom: 8px; }
   .add-row input { flex: 1; min-width: 0; font: inherit; font-size: 12.5px; padding: 6px 9px;
     border: 1px solid #d8d2c5; border-radius: 7px; background: #fffdf9; color: var(--ink); }
@@ -521,7 +524,7 @@ function applyListingFilter() {
   // Listings stay on the map (incl. Ideal mode), gated only by the source filter
   // (Both / Scout / Zillow).
   listingItems.forEach(({ s, marker }) => {
-    const want = passesSource(s);
+    const want = passesFilters(s);
     if (want && !listingsLayer.hasLayer(marker)) listingsLayer.addLayer(marker);
     else if (!want && listingsLayer.hasLayer(marker)) listingsLayer.removeLayer(marker);
   });
@@ -670,10 +673,12 @@ const setRate = (k, v) => { v ? localStorage.setItem(k + ":rate", v) : localStor
 const getNote = k => localStorage.getItem(k + ":note") || "";
 const setNote = (k, v) => { v ? localStorage.setItem(k + ":note", v) : localStorage.removeItem(k + ":note"); scheduleSync(); };
 
-// Durable storage: localStorage is the live store, but we also persist it to
-// notes.json on disk via the dev server (serve.py) so notes survive a cache
-// clear. If the /api/notes endpoint isn't there (plain static host), this all
+// Durable, cross-device storage: localStorage is the live store, but we also
+// persist it to the server so notes/ratings survive a cache clear AND sync across
+// devices. On the live HTTPS site that's notes.php (cybercanvas); on the local
+// HTTP dev server it's serve.py's /api/notes. If neither is reachable this all
 // no-ops and localStorage alone is used.
+const NOTES_API = location.protocol === "https:" ? "notes.php" : "api/notes";
 function allNotes() {
   const data = {};
   for (let i = 0; i < localStorage.length; i++) {
@@ -686,14 +691,14 @@ let _syncTimer = null;
 function scheduleSync() {
   clearTimeout(_syncTimer);
   _syncTimer = setTimeout(() => {
-    fetch("api/notes", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(allNotes()) }).catch(() => {});
+    fetch(NOTES_API, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(allNotes()) }).catch(() => {});
   }, 400);
 }
-// On load, pull the on-disk notes into localStorage, then refresh the sidebar.
-fetch("api/notes").then(r => r.ok ? r.json() : null).then(d => {
+// On load, pull the server notes into localStorage, then refresh the sidebar.
+fetch(NOTES_API).then(r => r.ok ? r.json() : null).then(d => {
   if (!d) return;
   Object.entries(d).forEach(([k, v]) => { if (k.startsWith("mp:")) localStorage.setItem(k, v); });
-  if (typeof restoreAddedListings === "function") restoreAddedListings();   // disk-saved added listings
+  if (typeof restoreAddedListings === "function") restoreAddedListings();   // server-saved added listings
   if (listingItems) buildSidebar();
 }).catch(() => {});
 
@@ -704,6 +709,13 @@ let sourceFilter = "both";
 function passesSource(s) {
   return sourceFilter === "both" ? true : sourceFilter === "zillow" ? !!s.added : !s.added;
 }
+// Seen filter: "all" | "seen" | "unseen". A listing counts as "seen" once it has a note.
+let seenFilter = "all";
+function hasNote(s) { return !!getNote(noteKey(s)).trim(); }
+function passesSeen(s) {
+  return seenFilter === "all" ? true : seenFilter === "seen" ? hasNote(s) : !hasNote(s);
+}
+function passesFilters(s) { return passesSource(s) && passesSeen(s); }
 
 // County lookup by point-in-polygon (tracts carry county FIPS in GEOID[:5]).
 const COUNTY_NAME = { "42011":"Berks", "42017":"Bucks", "42029":"Chester",
@@ -744,7 +756,7 @@ function makeCard(s, marker) {
   const sc = b => d && d[b] && d[b].score != null ? d[b].score : "–";
   const k = noteKey(s);
   const card = document.createElement("div");
-  card.className = "lcard" + (getRate(k) ? " rated" : "") + (s.added ? " lcard-added" : "");
+  card.className = "lcard" + (getRate(k) ? " rated" : "") + (s.added ? " lcard-added" : "") + (hasNote(s) ? " lcard-seen" : "");
   const priceLine = s.price
     ? `<div class="lcard-price" style="color:${col}">${s.price}<span>/mo</span></div>`
     : `<div class="lcard-price"><span class="added-tag">Added by you</span></div>`;
@@ -784,7 +796,10 @@ function makeCard(s, marker) {
   // notes box (stop clicks from panning the map; save on every edit)
   const note = card.querySelector(".lcard-note");
   note.value = getNote(k);
-  note.addEventListener("input", () => setNote(k, note.value));
+  note.addEventListener("input", () => {
+    setNote(k, note.value);
+    card.classList.toggle("lcard-seen", !!note.value.trim());   // grey live; re-filter only on next render
+  });
   ["click", "mousedown", "dblclick"].forEach(e => note.addEventListener(e, ev => ev.stopPropagation()));
   // remove control (added listings only)
   const rm = card.querySelector(".lcard-remove");
@@ -821,7 +836,7 @@ function renderListings() {
   const list = document.getElementById("listingList");
   if (!list || !listingItems) return;
   list.innerHTML = "";
-  listingGroups(listingItems.filter(it => passesSource(it.s))).forEach(g => {
+  listingGroups(listingItems.filter(it => passesFilters(it.s))).forEach(g => {
     if (g.label) {
       const h = document.createElement("div");
       h.className = "group-head";
@@ -852,6 +867,11 @@ function buildSidebar() {
          <button type="button" data-src="scout">Scout</button>
          <button type="button" data-src="zillow">Zillow</button>
        </div>
+       <div class="src-seg" id="seenSeg" role="group" aria-label="Filter by seen status">
+         <button type="button" data-seen="all">All</button>
+         <button type="button" data-seen="seen">Seen</button>
+         <button type="button" data-seen="unseen">Unseen</button>
+       </div>
      </div>
      <div id="addStatus" class="add-status" hidden></div>
      <div id="listingList"></div>`;
@@ -867,6 +887,16 @@ function buildSidebar() {
     seg.querySelectorAll("button").forEach(b => b.classList.toggle("active", b.dataset.src === sourceFilter));
     applyListingFilter();   // map pins
     renderListings();       // sidebar cards
+  });
+  const seen = wrap.querySelector("#seenSeg");
+  seen.querySelectorAll("button").forEach(b => b.classList.toggle("active", b.dataset.seen === seenFilter));
+  seen.addEventListener("click", e => {
+    const btn = e.target.closest("button");
+    if (!btn) return;
+    seenFilter = btn.dataset.seen;
+    seen.querySelectorAll("button").forEach(b => b.classList.toggle("active", b.dataset.seen === seenFilter));
+    applyListingFilter();
+    renderListings();
   });
   const addInput = wrap.querySelector("#addInput");
   wrap.querySelector("#addBtn").addEventListener("click", addFromInput);
@@ -925,16 +955,33 @@ function findCounty(lng, lat) {
   const fips = f ? f.properties.GEOID.slice(0, 5) : null;
   return { fips, name: fips ? (COUNTY_NAME[fips] || "Other") : "Unknown" };
 }
-async function geocodeOne(q) {
-  const hasState = /\b(pa|pennsylvania)\b/i.test(q);
+async function nominatim(q) {
   const params = new URLSearchParams({
-    q: hasState ? q : q + ", PA",
-    format: "json", addressdetails: "1", limit: "1", countrycodes: "us",
+    q, format: "json", addressdetails: "1", limit: "1", countrycodes: "us",
     viewbox: "-75.85,40.65,-74.85,39.80", bounded: "0",
   });
   const r = await fetch("https://nominatim.openstreetmap.org/search?" + params, { headers: { Accept: "application/json" } });
   const j = await r.json();
   return j && j.length ? j[0] : null;
+}
+// Try the full address, then progressively coarser fallbacks (street+town, ZIP,
+// town) so a house the free geocoder doesn't know still lands a pin in the right
+// area. Returns { hit, approx } — approx=true means we fell back below the exact
+// address. The displayed street address always comes from the user's input.
+async function geocodeOne(text) {
+  const hasState = /\b(pa|pennsylvania)\b/i.test(text);
+  const zip = (text.match(/\b(\d{5})\b/) || [])[1];
+  const noZip = text.replace(/\b\d{5}\b/, "").replace(/\s{2,}/g, " ").trim();
+  const tries = [hasState ? text : text + ", PA", noZip + (hasState ? "" : ", PA")];
+  if (zip) tries.push(zip + ", PA");          // ZIP centroid — reliable last resort
+  for (let i = 0; i < tries.length; i++) {
+    if (!tries[i] || !tries[i].replace(/[, ]/g, "")) continue;
+    try {
+      const hit = await nominatim(tries[i]);
+      if (hit) return { hit, approx: i >= 2 };   // i>=2 means ZIP/town centroid
+    } catch {}
+  }
+  return null;
 }
 
 function addListingItem(s, persist) {
@@ -943,7 +990,7 @@ function addListingItem(s, persist) {
     countyName: s.countyName || (s.county ? (COUNTY_NAME[s.county] || "Other") : "Unknown") };
   listingItems.push(item);
   if (persist) { const arr = loadAdded(); arr.push(s); saveAdded(arr); }
-  if (!passesSource(s) && listingsLayer.hasLayer(item.marker)) listingsLayer.removeLayer(item.marker);
+  if (!passesFilters(s) && listingsLayer.hasLayer(item.marker)) listingsLayer.removeLayer(item.marker);
   renderListings();
   return item;
 }
@@ -971,6 +1018,35 @@ function setAddStatus(msg, isErr) {
   el.classList.toggle("err", !!isErr);
   el.hidden = !msg;
 }
+// Keep the address the user actually pasted (or the one in the Zillow URL slug);
+// the geocoder is only for the map pin and to help split city/zip. This avoids
+// losing the house number when the geocoder only resolves to a road/town.
+function parseAddrText(text, a) {
+  text = (text || "").replace(/\s+/g, " ").trim();
+  const zipM = text.match(/\b(\d{5})\b/);
+  const zip = (a && a.postcode) || (zipM ? zipM[1] : "");
+  const cityHint = (a && (a.city || a.town || a.township || a.village || a.hamlet || a.municipality)) || "";
+  let street, city = cityHint;
+  if (text.includes(",")) {                                  // "123 Main St, Lansdale, PA 19446"
+    const parts = text.split(",").map(s => s.trim()).filter(Boolean);
+    street = parts[0];
+    if (!city && parts[1]) city = parts[1].replace(/\b[A-Z]{2}\b.*$/, "").replace(/\b\d{5}\b.*$/, "").trim();
+  } else {                                                   // slug form: "123 Main St Lansdale PA 19446"
+    let t = text;
+    if (zip) t = t.replace(new RegExp("\\s*" + zip + "\\s*$"), "");
+    t = t.replace(/\s+(PA|Pennsylvania)\s*$/i, "").trim();
+    // Only peel the geocoder's town off the end if it actually appears in the
+    // pasted address; otherwise (e.g. it returned a township for a ZIP centroid)
+    // keep the full street line and drop the mismatched town.
+    const re = cityHint && new RegExp("\\s" + cityHint.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\s*$", "i");
+    if (re && re.test(" " + t)) t = t.replace(re, "").trim();
+    else city = "";
+    street = t;
+  }
+  if (!street) street = (a && [a.house_number, a.road].filter(Boolean).join(" ")) || text;
+  return { street, city, zip };
+}
+
 async function addFromInput() {
   const inp = document.getElementById("addInput");
   const btn = document.getElementById("addBtn");
@@ -986,13 +1062,12 @@ async function addFromInput() {
   btn.disabled = true; inp.disabled = true;
   setAddStatus("Looking up address…", false);
   try {
-    const hit = await geocodeOne(query);
-    if (!hit) { setAddStatus("Couldn't find that address. Try pasting the full street address (with town).", true); return; }
-    const a = hit.address || {};
-    const lat = +hit.lat, lng = +hit.lon;
-    const street = [a.house_number, a.road].filter(Boolean).join(" ") || hit.display_name.split(",")[0];
-    const city = a.city || a.town || a.township || a.village || a.hamlet || a.municipality || a.county || "";
-    const zip = a.postcode || "";
+    const geo = await geocodeOne(query);
+    if (!geo) { setAddStatus("Couldn't find that address. Try pasting the full street address (with town).", true); return; }
+    const a = geo.hit.address || {};
+    const lat = +geo.hit.lat, lng = +geo.hit.lon;
+    const parsed = parseAddrText(query, a);   // keep the pasted/slug address, not the geocoder's
+    const street = parsed.street, city = parsed.city, zip = parsed.zip;
     const geoid = findDistrictGeoid(lng, lat);
     const cc = findCounty(lng, lat);
     const s = {
@@ -1000,7 +1075,7 @@ async function addFromInput() {
       url: url || ("https://www.zillow.com/homes/" + encodeURIComponent(query) + "_rb/"),
       district: geoid && DISTRICTS[geoid] ? DISTRICTS[geoid].name : "—",
       geoid: geoid || null, county: cc.fips, countyName: cc.name,
-      added: true, budget: "added",
+      added: true, budget: "added", approx: geo.approx || undefined,
       beds: null, baths: null, sqft: null, price: null, priceNum: 0
     };
     if (listingItems.some(it => noteKey(it.s) === noteKey(s))) {
@@ -1010,7 +1085,7 @@ async function addFromInput() {
     }
     addListingItem(s, true);
     inp.value = "";
-    setAddStatus(`Added ✓ ${street}${city ? ", " + city : ""} — ${s.district}`, false);
+    setAddStatus(`Added ✓ ${street}${city ? ", " + city : ""} — ${s.district}${geo.approx ? " (approx pin)" : ""}`, false);
     const it = listingItems.find(i => noteKey(i.s) === noteKey(s));
     if (it) { map.setView([lat, lng], Math.max(map.getZoom(), 13)); it.marker.openPopup(); }
     setTimeout(() => setAddStatus("", false), 6000);
