@@ -1,5 +1,27 @@
 [
   {
+    "address": "202 HATFIELD ST #A",
+    "city": "LANSDALE",
+    "zip": "19446",
+    "price": "$2,600",
+    "priceNum": 2600,
+    "beds": 3,
+    "baths": 2.5,
+    "sqft": 2023,
+    "lat": 40.24942,
+    "lng": -75.27703,
+    "photo": "https://d1buiexcd5gara.cloudfront.net/property_photos/brightmls/805/084/473/602/5135277240e5e237b286161545008cfa951bfe5c",
+    "url": "https://tabithaheit.realscout.com/homesearch/listings/p-202-hatfield-st-a-lansdale-19446-brightmls-569",
+    "status": "For Rent",
+    "favorite": true,
+    "source": "realscout",
+    "budget": "under",
+    "bathOK": true,
+    "firstSeen": "2026-06-24T16:26:32",
+    "geoid": "4217280",
+    "district": "North Penn"
+  },
+  {
     "address": "854 GRAPHITE DR",
     "city": "PHOENIXVILLE",
     "zip": "19460",
@@ -17,9 +39,9 @@
     "source": "realscout",
     "budget": "under",
     "bathOK": true,
+    "firstSeen": "2026-06-24",
     "geoid": "4219050",
-    "district": "Phoenixville Area",
-    "firstSeen": "2026-06-24"
+    "district": "Phoenixville Area"
   },
   {
     "address": "321 SAGE LN",
@@ -39,9 +61,31 @@
     "source": "realscout",
     "budget": "under",
     "bathOK": true,
+    "firstSeen": "2026-06-24",
     "geoid": "4218990",
-    "district": "Philadelphia City",
-    "firstSeen": "2026-06-24"
+    "district": "Philadelphia City"
+  },
+  {
+    "address": "324 W WALNUT ST #A",
+    "city": "NORTH WALES",
+    "zip": "19454",
+    "price": "$2,850",
+    "priceNum": 2850,
+    "beds": 3,
+    "baths": 2.5,
+    "sqft": 2039,
+    "lat": 40.20847,
+    "lng": -75.28051,
+    "photo": "https://d1buiexcd5gara.cloudfront.net/property_photos/brightmls/805/084/396/072/395c7df924c7df46b1972c0362274739b095922f",
+    "url": "https://tabithaheit.realscout.com/homesearch/listings/p-324-w-walnut-st-a-north-wales-19454-brightmls-494",
+    "status": "For Rent",
+    "favorite": true,
+    "source": "realscout",
+    "budget": "under",
+    "bathOK": true,
+    "firstSeen": "2026-06-24T16:26:32",
+    "geoid": "4217280",
+    "district": "North Penn"
   },
   {
     "address": "22 N CANNON AVE",
@@ -61,9 +105,9 @@
     "source": "realscout",
     "budget": "under",
     "bathOK": true,
+    "firstSeen": "2026-06-24",
     "geoid": "4217280",
-    "district": "North Penn",
-    "firstSeen": "2026-06-24"
+    "district": "North Penn"
   },
   {
     "address": "Address Not Disclosed",
@@ -83,10 +127,10 @@
     "source": "realscout",
     "budget": "under",
     "bathOK": true,
-    "approx": true,
+    "firstSeen": "2026-06-24",
     "geoid": "4217280",
     "district": "North Penn",
-    "firstSeen": "2026-06-24"
+    "approx": true
   },
   {
     "address": "109 ALMOND DR",
@@ -106,9 +150,9 @@
     "source": "realscout",
     "budget": "ceiling",
     "bathOK": true,
+    "firstSeen": "2026-06-24",
     "geoid": "4217280",
-    "district": "North Penn",
-    "firstSeen": "2026-06-24"
+    "district": "North Penn"
   },
   {
     "address": "235 COMPASS DR",
@@ -128,9 +172,9 @@
     "source": "realscout",
     "budget": "ceiling",
     "bathOK": true,
+    "firstSeen": "2026-06-24",
     "geoid": "4217280",
-    "district": "North Penn",
-    "firstSeen": "2026-06-24"
+    "district": "North Penn"
   },
   {
     "address": "447 FORT HILL CIR",
@@ -150,9 +194,9 @@
     "source": "realscout",
     "budget": "ceiling",
     "bathOK": true,
+    "firstSeen": "2026-06-24",
     "geoid": "4219470",
-    "district": "Colonial",
-    "firstSeen": "2026-06-24"
+    "district": "Colonial"
   },
   {
     "address": "825 PECAN RD",
@@ -172,9 +216,9 @@
     "source": "realscout",
     "budget": "ceiling",
     "bathOK": true,
+    "firstSeen": "2026-06-24",
     "geoid": "4222560",
-    "district": "Spring-Ford Area",
-    "firstSeen": "2026-06-24"
+    "district": "Spring-Ford Area"
   },
   {
     "address": "125 DRAGON DR",
@@ -194,9 +238,9 @@
     "source": "realscout",
     "budget": "ceiling",
     "bathOK": true,
+    "firstSeen": "2026-06-24",
     "geoid": "4217280",
-    "district": "North Penn",
-    "firstSeen": "2026-06-24"
+    "district": "North Penn"
   },
   {
     "address": "905 SUSAN CIR",
@@ -216,9 +260,9 @@
     "source": "realscout",
     "budget": "ceiling",
     "bathOK": true,
+    "firstSeen": "2026-06-24",
     "geoid": "4217280",
-    "district": "North Penn",
-    "firstSeen": "2026-06-24"
+    "district": "North Penn"
   },
   {
     "address": "3845 JACOB STOUT RD #13",
@@ -238,9 +282,9 @@
     "source": "realscout",
     "budget": "ceiling",
     "bathOK": true,
+    "firstSeen": "2026-06-24",
     "geoid": "4205310",
-    "district": "Central Bucks",
-    "firstSeen": "2026-06-24"
+    "district": "Central Bucks"
   },
   {
     "address": "219 BRONZE ST",
@@ -260,9 +304,9 @@
     "source": "realscout",
     "budget": "ceiling",
     "bathOK": true,
+    "firstSeen": "2026-06-24",
     "geoid": "4219050",
-    "district": "Phoenixville Area",
-    "firstSeen": "2026-06-24"
+    "district": "Phoenixville Area"
   },
   {
     "address": "320 WALNUT ST",
@@ -282,9 +326,9 @@
     "source": "realscout",
     "budget": "ceiling",
     "bathOK": true,
+    "firstSeen": "2026-06-24",
     "geoid": "4218930",
-    "district": "Perkiomen Valley",
-    "firstSeen": "2026-06-24"
+    "district": "Perkiomen Valley"
   },
   {
     "address": "438 CANDLEWOOD WAY",
@@ -304,9 +348,9 @@
     "source": "realscout",
     "budget": "ceiling",
     "bathOK": true,
+    "firstSeen": "2026-06-24",
     "geoid": "4217280",
-    "district": "North Penn",
-    "firstSeen": "2026-06-24"
+    "district": "North Penn"
   },
   {
     "address": "15 CHARTER OAK CT",
@@ -326,9 +370,9 @@
     "source": "realscout",
     "budget": "ceiling",
     "bathOK": true,
+    "firstSeen": "2026-06-24",
     "geoid": "4205310",
-    "district": "Central Bucks",
-    "firstSeen": "2026-06-24"
+    "district": "Central Bucks"
   },
   {
     "address": "727 PEONY LN",
@@ -348,9 +392,9 @@
     "source": "realscout",
     "budget": "ceiling",
     "bathOK": true,
+    "firstSeen": "2026-06-24",
     "geoid": "4222560",
-    "district": "Spring-Ford Area",
-    "firstSeen": "2026-06-24"
+    "district": "Spring-Ford Area"
   },
   {
     "address": "105 LARRABEE WAY",
@@ -370,9 +414,9 @@
     "source": "realscout",
     "budget": "ceiling",
     "bathOK": true,
+    "firstSeen": "2026-06-24",
     "geoid": "4222560",
-    "district": "Spring-Ford Area",
-    "firstSeen": "2026-06-24"
+    "district": "Spring-Ford Area"
   },
   {
     "address": "229 CADENCE CT",
@@ -392,8 +436,8 @@
     "source": "realscout",
     "budget": "ceiling",
     "bathOK": true,
+    "firstSeen": "2026-06-24",
     "geoid": "4214250",
-    "district": "Methacton",
-    "firstSeen": "2026-06-24"
+    "district": "Methacton"
   }
 ]

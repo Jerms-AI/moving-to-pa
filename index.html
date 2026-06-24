@@ -743,7 +743,10 @@ function pointInFeature(lng, lat, feat) {
 function assignCounties() {
   if (!tractGeo || !listingItems) return;
   listingItems.forEach(it => {
-    if (it.county !== undefined) return;        // compute once per listing
+    // Always derive county from the pin's coordinates so the group matches the map.
+    // Cache for RealScout listings (compute once); recompute added ones every time
+    // since their stored county may be stale from an older save.
+    if (it.county !== undefined && !it.s.added) return;
     const f = tractGeo.features.find(ft => pointInFeature(it.s.lng, it.s.lat, ft));
     it.county = f ? f.properties.GEOID.slice(0, 5) : null;
     it.countyName = it.county ? (COUNTY_NAME[it.county] || "Other") : "Unknown";
@@ -769,13 +772,12 @@ function makeCard(s, marker) {
        ${s.favorite ? `<div class="fav-badge">♥ Saved on RealScout</div>` : ""}
        ${priceLine}
        ${statsLine}
-       <div class="lcard-addr">${s.address}${s.city ? ", " + s.city : ""}</div>
+       <div class="lcard-addr">${s.address}${s.city ? ", " + s.city : ""}${s.zip ? " " + s.zip : ""}</div>
        <div class="lcard-dist">${s.district || "—"} · E${sc("elementary")} M${sc("middle")} H${sc("high")}${s.bathOK === false ? " · ⚠ 1 full bath" : ""}</div>
        <a class="lcard-link" href="${listingUrl(s)}" target="_blank" rel="noopener">${s.added ? "View on Zillow ↗" : "View details ↗"}</a>
        <div class="lcard-meta">
          <div class="lcard-rate"><span>Rate:</span><span class="star" data-r="1">★</span><span class="star" data-r="2">★</span><span class="star" data-r="3">★</span></div>
          <textarea class="lcard-note" placeholder="Notes…" rows="2"></textarea>
-         ${s.added ? `<button class="lcard-remove" type="button">✕ Remove</button>` : ""}
        </div>`;
   card.addEventListener("mouseenter", () => { highlightMarker(marker, true); card.classList.add("hl"); });
   card.addEventListener("mouseleave", () => { highlightMarker(marker, false); card.classList.remove("hl"); });
@@ -801,9 +803,7 @@ function makeCard(s, marker) {
     card.classList.toggle("lcard-seen", !!note.value.trim());   // grey live; re-filter only on next render
   });
   ["click", "mousedown", "dblclick"].forEach(e => note.addEventListener(e, ev => ev.stopPropagation()));
-  // remove control (added listings only)
-  const rm = card.querySelector(".lcard-remove");
-  if (rm) rm.addEventListener("click", ev => { ev.stopPropagation(); removeAdded(s); });
+  // (no in-card remove button — added listings are removed on request via removeAdded)
   return card;
 }
 
@@ -996,12 +996,12 @@ function addListingItem(s, persist) {
 }
 function restoreAddedListings() {
   if (!Array.isArray(listingItems)) return;
-  const have = new Set(listingItems.map(it => noteKey(it.s)));
-  loadAdded().forEach(s => {
-    if (have.has(noteKey(s))) return;
-    have.add(noteKey(s));
-    addListingItem(s, false);
-  });
+  // Rebuild added listings from the latest saved set so server-synced data wins
+  // over any stale localStorage (e.g. a wrong county from an older save).
+  for (let i = listingItems.length - 1; i >= 0; i--) {
+    if (listingItems[i].s.added) { listingsLayer.removeLayer(listingItems[i].marker); listingItems.splice(i, 1); }
+  }
+  loadAdded().forEach(s => addListingItem(s, false));
 }
 function removeAdded(s) {
   const key = noteKey(s);
@@ -1021,27 +1021,37 @@ function setAddStatus(msg, isErr) {
 // Keep the address the user actually pasted (or the one in the Zillow URL slug);
 // the geocoder is only for the map pin and to help split city/zip. This avoids
 // losing the house number when the geocoder only resolves to a road/town.
+const STREET_SUFFIX = /^(st|street|ave|avenue|rd|road|way|ct|court|cir|circle|dr|drive|ln|lane|pl|place|blvd|boulevard|ter|terrace|pkwy|parkway|hwy|highway|pike|run|path|trl|trail|sq|square|loop|row|walk|xing|crossing|bend|bnd|pt|point|cv|cove|grn|green|aly|alley|plz|plaza|cres|crescent|gln|glen|knl|knoll)$/i;
 function parseAddrText(text, a) {
   text = (text || "").replace(/\s+/g, " ").trim();
   const zipM = text.match(/\b(\d{5})\b/);
-  const zip = (a && a.postcode) || (zipM ? zipM[1] : "");
+  const zip = (zipM ? zipM[1] : "") || (a && a.postcode) || "";   // prefer the zip in the pasted address
   const cityHint = (a && (a.city || a.town || a.township || a.village || a.hamlet || a.municipality)) || "";
-  let street, city = cityHint;
+  let street = "", city = "";
   if (text.includes(",")) {                                  // "123 Main St, Lansdale, PA 19446"
     const parts = text.split(",").map(s => s.trim()).filter(Boolean);
     street = parts[0];
-    if (!city && parts[1]) city = parts[1].replace(/\b[A-Z]{2}\b.*$/, "").replace(/\b\d{5}\b.*$/, "").trim();
-  } else {                                                   // slug form: "123 Main St Lansdale PA 19446"
+    city = (parts[1] || "").replace(/\s*\b(PA|Pennsylvania)\b.*$/i, "").replace(/\s*\b\d{5}\b.*$/, "").trim() || cityHint;
+  } else {                                                   // slug form: "708 Salem Way Lansdale PA 19446"
     let t = text;
-    if (zip) t = t.replace(new RegExp("\\s*" + zip + "\\s*$"), "");
+    if (zip) t = t.replace(new RegExp("\\s*" + zip + "\\s*$"), "").trim();
     t = t.replace(/\s+(PA|Pennsylvania)\s*$/i, "").trim();
-    // Only peel the geocoder's town off the end if it actually appears in the
-    // pasted address; otherwise (e.g. it returned a township for a ZIP centroid)
-    // keep the full street line and drop the mismatched town.
-    const re = cityHint && new RegExp("\\s" + cityHint.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\s*$", "i");
-    if (re && re.test(" " + t)) t = t.replace(re, "").trim();
-    else city = "";
-    street = t;
+    // Split street from town at the last street-type suffix (Way, Ct, Rd, Ave…),
+    // keeping any unit token (#13, "D", "Apt 2") with the street.
+    const tokens = t.split(" ");
+    let sufIdx = -1;
+    tokens.forEach((tok, i) => { if (STREET_SUFFIX.test(tok.replace(/[.,#]/g, ""))) sufIdx = i; });
+    const isUnit = tok => /^#/.test(tok) || /\d/.test(tok) || /^[A-Za-z]$/.test(tok) || /^(apt|unit|ste)$/i.test(tok);
+    if (sufIdx >= 0 && sufIdx < tokens.length - 1) {
+      let end = sufIdx;
+      while (end + 1 < tokens.length && isUnit(tokens[end + 1])) end++;
+      street = tokens.slice(0, end + 1).join(" ");
+      city = tokens.slice(end + 1).join(" ");
+    } else {                                                 // no suffix: peel a matching geocoder town if present
+      const re = cityHint && new RegExp("\\s" + cityHint.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\s*$", "i");
+      if (re && re.test(" " + t)) { t = t.replace(re, "").trim(); city = cityHint; }
+      street = t;
+    }
   }
   if (!street) street = (a && [a.house_number, a.road].filter(Boolean).join(" ")) || text;
   return { street, city, zip };

@@ -7,7 +7,7 @@ keep existing geocodes and only add/refresh changed listings.
 Usage: python3 ingest_realscout.py
 """
 import json, re, sys, time
-from datetime import date
+from datetime import datetime
 from parse_emails import HERE, geocode, district_for, budget, keyfor
 
 RAW = f"{HERE}/realscout_raw.json"
@@ -49,8 +49,9 @@ def main():
             updated += 1
         else:
             new_count += 1
-        # "Recently added" sort: keep the first time we saw this listing.
-        L["firstSeen"] = prev.get("firstSeen") if prev and prev.get("firstSeen") else date.today().isoformat()
+        # "Recently added" sort: keep the first time we saw this listing (full
+        # timestamp so newly-appearing matches sort above the earlier batch).
+        L["firstSeen"] = prev.get("firstSeen") if prev and prev.get("firstSeen") else datetime.now().isoformat(timespec="seconds")
         # RealScout gives us exact lat/lng — use it directly (no geocoder needed);
         # only fall back to geocoding if a listing somehow lacks coordinates.
         if L.get("lat") is not None and L.get("lng") is not None:

@@ -10,7 +10,7 @@ point-in-polygon, and writes listings.json. Idempotent — safe to re-run.
 Usage: python3 parse_emails.py
 """
 import email, re, html, json, glob, sys, time, urllib.parse, urllib.request
-from datetime import date
+from datetime import datetime
 from email import policy
 
 HERE = __file__.rsplit("/", 1)[0] if "/" in __file__ else "."
@@ -179,7 +179,7 @@ def main():
                 print(f"  !! could not geocode: {L['address']}, {L['city']}", file=sys.stderr)
             new_count += (0 if prev else 1)
             time.sleep(1)  # be polite to geocoders
-        L["firstSeen"] = prev.get("firstSeen") if prev and prev.get("firstSeen") else date.today().isoformat()
+        L["firstSeen"] = prev.get("firstSeen") if prev and prev.get("firstSeen") else datetime.now().isoformat(timespec="seconds")
         L.pop("_emailDate", None)
         by_addr[k] = L
 
